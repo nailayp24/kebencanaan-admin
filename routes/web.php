@@ -2,14 +2,33 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KebencanaanController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PoskoController;
+use App\Http\Controllers\KejadianController;
 
-Route::get('/', function () {
-    return redirect('/kebencanaan'); // arahkan langsung ke halaman kebencanaan
+// Redirect halaman utama ke dashboard
+Route::redirect('/', '/dashboard');
+
+// =========================
+// Dashboard
+// =========================
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// =========================
+// Autentikasi
+// =========================
+Route::prefix('auth')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login.index');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.handle');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::get('/kebencanaan', [KebencanaanController::class, 'index']);
+// =========================
+// Data Kebencanaan
+// =========================
+Route::resource('kejadian', KejadianController::class);
 
-
-Route::get('/auth', [AuthController::class, 'index']);       // menampilkan form login
-Route::post('/auth/login', [AuthController::class, 'login']); // proses login
+// =========================
+// CRUD Kejadian & Posko
+// =========================
+Route::resource('posko', PoskoController::class);

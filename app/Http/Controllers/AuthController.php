@@ -30,21 +30,29 @@ class AuthController extends Controller
             'password.regex' => 'Password harus mengandung huruf kapital.'
         ]);
 
-        // Username & password yang sudah ditentukan
+        // Username & password yang valid
         $validUsername = "naila";
         $validPassword = "Nanai123";
 
-        // Cek apakah input sama dengan hardcode
+        // Cek login
         if ($request->username === $validUsername && $request->password === $validPassword) {
-            // kalau cocok → ke halaman sukses
-            return view('auth.success', [
-                'username' => $request->username
-            ]);
+            // Simpan session login sederhana
+            session(['logged_in' => true, 'username' => $request->username]);
+
+            // Redirect ke dashboard
+            return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . $request->username . '!');
         }
 
-        // kalau tidak cocok → balik ke login dengan pesan error
+        // Kalau gagal login
         return back()->withErrors([
             'login' => 'Username atau password salah!'
         ])->withInput();
+    }
+
+    // Logout user
+    public function logout()
+    {
+        session()->flush();
+        return redirect()->route('login.index')->with('success', 'Berhasil logout.');
     }
 }
