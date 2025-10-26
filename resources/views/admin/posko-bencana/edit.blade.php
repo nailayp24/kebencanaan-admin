@@ -1,4 +1,4 @@
-{{-- resources/views/admin/posko-bencana/edit.blade.php --}}
+{{-- tes --}}
 @extends('layouts.admin.app')
 
 @section('content')
