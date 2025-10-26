@@ -10,7 +10,7 @@ class PoskoBencanaController extends Controller
 {
     public function index()
     {
-        // GUNAKAN EAGER LOADING DENGAN NULL SAFETY
+      
         $posko = PoskoBencana::with(['kejadianBencana' => function($query) {
             $query->withDefault([
                 'jenis_bencana' => 'Data Tidak Ditemukan',

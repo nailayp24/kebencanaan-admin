@@ -1,5 +1,4 @@
 <?php
-// app/Models/PoskoBencana.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +10,6 @@ class PoskoBencana extends Model
 
     protected $table = 'posko_bencana';
     protected $primaryKey = 'posko_id';
-
     protected $fillable = [
         'kejadian_id',
         'nama',
@@ -26,7 +24,7 @@ class PoskoBencana extends Model
         return $this->belongsTo(KejadianBencana::class, 'kejadian_id', 'kejadian_id');
     }
 
-    // ALIAS UNTUK COMPATIBILITY
+ 
     public function kejadian()
     {
         return $this->belongsTo(KejadianBencana::class, 'kejadian_id', 'kejadian_id');
