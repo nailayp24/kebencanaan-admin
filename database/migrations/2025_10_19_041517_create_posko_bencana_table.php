@@ -13,7 +13,14 @@ return new class extends Migration
 {
     Schema::create('posko_bencana', function (Blueprint $table) {
         $table->id('posko_id');
-        $table->foreignId('kejadian_id')->constrained('kejadian_bencana')->onDelete('cascade');
+
+        $table->unsignedBigInteger('kejadian_id'); // Create the column
+        
+        $table->foreign('kejadian_id') // Define the foreign key
+          ->references('kejadian_id') // Reference the actual PK name in kejadian_bencana
+          ->on('kejadian_bencana') // Specify the referenced table
+          ->onDelete('cascade');
+
         $table->string('nama');
         $table->string('alamat');
         $table->string('kontak');

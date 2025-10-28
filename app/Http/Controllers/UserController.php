@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
          $dataUser = User::all();
-        return view('admin.user.index', compact('dataUser'));
+        return view('pages.user.index', compact('dataUser'));
     }
 
     /**
@@ -23,7 +23,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.user.create');
+        return view('pages.user.create');
     }
 
     /**
@@ -76,7 +76,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $dataUser = User::findOrFail($id);
-        return view('admin.user.edit', compact('dataUser'));
+        return view('pages.user.edit', compact('dataUser'));
     }
 
     /**
@@ -141,7 +141,7 @@ class UserController extends Controller
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('pages.auth.login');
     }
 
     /**
@@ -207,7 +207,7 @@ class UserController extends Controller
 
     public function showRegisterForm()
 {
-    return view('auth.register'); // Pastikan mengarah ke view yang benar
+    return view('pages.auth.register'); // Pastikan mengarah ke view yang benar
 }
 
 /**

@@ -10,7 +10,7 @@ class PoskoBencanaController extends Controller
 {
     public function index()
     {
-      
+
         $posko = PoskoBencana::with(['kejadianBencana' => function($query) {
             $query->withDefault([
                 'jenis_bencana' => 'Data Tidak Ditemukan',
@@ -18,7 +18,7 @@ class PoskoBencanaController extends Controller
             ]);
         }])->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('admin.posko-bencana.index', compact('posko'));
+        return view('pages.posko-bencana.index', compact('posko'));
     }
 
     // METHOD LAINNYA TETAP SAMA...
@@ -29,7 +29,7 @@ class PoskoBencanaController extends Controller
                   ->orWhereIn('status_kejadian', ['dilaporkan', 'diverifikasi', 'ditangani']);
         })->orderBy('tanggal', 'desc')->get();
 
-        return view('admin.posko-bencana.create', compact('kejadian'));
+        return view('pages.posko-bencana.create', compact('kejadian'));
     }
 
     public function store(Request $request)
@@ -61,7 +61,7 @@ class PoskoBencanaController extends Controller
     {
         $posko = PoskoBencana::findOrFail($id);
         $kejadian = KejadianBencana::all();
-        return view('admin.posko-bencana.edit', compact('posko', 'kejadian'));
+        return view('pages.posko-bencana.edit', compact('posko', 'kejadian'));
     }
 
     public function update(Request $request, $id)

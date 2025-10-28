@@ -12,12 +12,12 @@ class KejadianBencanaController extends Controller
     public function index()
     {
         $kejadian = KejadianBencana::orderBy('tanggal', 'desc')->paginate(10);
-        return view('admin.kejadian-bencana.index', compact('kejadian'));
+        return view('pages.kejadian-bencana.index', compact('kejadian'));
     }
 
     public function create()
     {
-        return view('admin.kejadian-bencana.create');
+        return view('pages.kejadian-bencana.create');
     }
 
     public function store(Request $request)
@@ -50,7 +50,7 @@ class KejadianBencanaController extends Controller
     {
         // GUNAKAN PRIMARY KEY YANG BENAR
         $kejadian = KejadianBencana::where('kejadian_id', $id)->firstOrFail();
-        return view('admin.kejadian-bencana.edit', compact('kejadian'));
+        return view('pages.kejadian-bencana.edit', compact('kejadian'));
     }
 
     public function update(Request $request, $id)

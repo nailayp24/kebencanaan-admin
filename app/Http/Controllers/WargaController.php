@@ -11,12 +11,12 @@ class WargaController extends Controller
     public function index()
     {
          $warga = Warga::orderBy('nama')->paginate(10);
-        return view('admin.warga.index', compact('warga'));
+        return view('pages.warga.index', compact('warga'));
     }
 
     public function create()
     {
-        return view('admin.warga.create');
+        return view('pages.warga.create');
     }
 
     public function store(Request $request)
@@ -47,7 +47,7 @@ class WargaController extends Controller
     public function edit($id)
     {
         $warga = Warga::findOrFail($id);
-        return view('admin.warga.edit', compact('warga'));
+        return view('pages.warga.edit', compact('warga'));
     }
 
     public function update(Request $request, $id)
