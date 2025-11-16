@@ -18,15 +18,9 @@ class PoskoBencana extends Model
         'penanggung_jawab'
     ];
 
-    // RELATIONSHIP UTAMA
     public function kejadianBencana()
     {
         return $this->belongsTo(KejadianBencana::class, 'kejadian_id', 'kejadian_id');
     }
 
- 
-    public function kejadian()
-    {
-        return $this->belongsTo(KejadianBencana::class, 'kejadian_id', 'kejadian_id');
-    }
 }

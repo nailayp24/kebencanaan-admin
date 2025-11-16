@@ -48,14 +48,12 @@ class KejadianBencanaController extends Controller
 
     public function edit($id)
     {
-        // GUNAKAN PRIMARY KEY YANG BENAR
         $kejadian = KejadianBencana::where('kejadian_id', $id)->firstOrFail();
         return view('pages.kejadian-bencana.edit', compact('kejadian'));
     }
 
     public function update(Request $request, $id)
     {
-        // GUNAKAN PRIMARY KEY YANG BENAR
         $kejadian = KejadianBencana::where('kejadian_id', $id)->firstOrFail();
 
         $validator = Validator::make($request->all(), [
@@ -84,7 +82,6 @@ class KejadianBencanaController extends Controller
 
     public function destroy($id)
     {
-        // GUNAKAN PRIMARY KEY YANG BENAR
         $kejadian = KejadianBencana::where('kejadian_id', $id)->firstOrFail();
         $kejadian->delete();
 

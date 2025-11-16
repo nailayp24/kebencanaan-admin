@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\PoskoBencana;
@@ -10,20 +11,13 @@ class PoskoBencanaController extends Controller
 {
     public function index()
     {
-
-        $posko = PoskoBencana::with(['kejadianBencana' => function($query) {
-            $query->withDefault([
-                'jenis_bencana' => 'Data Tidak Ditemukan',
-                'lokasi_text' => '-'
-            ]);
-        }])->orderBy('created_at', 'desc')->paginate(10);
-
+        $posko = PoskoBencana::with(['kejadianBencana'])->orderBy('created_at', 'desc')->paginate(10);
         return view('pages.posko-bencana.index', compact('posko'));
     }
 
-    // METHOD LAINNYA TETAP SAMA...
     public function create()
     {
+        // SESUAIKAN: gunakan 'status_kejadian' bukan 'status'
         $kejadian = KejadianBencana::where(function($query) {
             $query->where('status_kejadian', '!=', 'selesai')
                   ->orWhereIn('status_kejadian', ['dilaporkan', 'diverifikasi', 'ditangani']);
@@ -54,8 +48,6 @@ class PoskoBencanaController extends Controller
         return redirect()->route('posko-bencana.index')
             ->with('success', 'Data posko bencana berhasil ditambahkan');
     }
-
-
 
     public function edit($id)
     {
