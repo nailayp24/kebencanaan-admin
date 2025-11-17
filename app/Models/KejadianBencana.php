@@ -1,4 +1,5 @@
 <?php
+// app/Models/KejadianBencana.php
 
 namespace App\Models;
 
@@ -31,5 +32,23 @@ class KejadianBencana extends Model
     public function posko()
     {
         return $this->hasMany(PoskoBencana::class, 'kejadian_id');
+    }
+
+    //  RELASI DONASI
+    public function donasi()
+    {
+        return $this->hasMany(DonasiBencana::class, 'kejadian_id');
+    }
+
+    // Total donasi untuk kejadian ini
+    public function getTotalDonasiAttribute()
+    {
+        return $this->donasi()->sum('nilai');
+    }
+
+    public function getTotalDonasiFormattedAttribute()
+    {
+        $total = $this->total_donasi;
+        return $total ? 'Rp ' . number_format($total, 0, ',', '.') : 'Rp 0';
     }
 }

@@ -1,15 +1,18 @@
 {{-- resources/views/pages/auth/register.blade.php --}}
-@extends('layouts.admin.auth') {{-- PERUBAHAN: gunakan layout auth --}}
+@extends('layouts.admin.auth')
 
-@section('title', 'Daftar - Bina Desa')
+@section('title', 'Daftar - Sistem Tanggap Darurat Bencana')
 
 @section('content')
 <div class="auth-logo">
     <div class="text-center mb-4">
-        <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}" alt="Logo Bina Desa" width="80" class="rounded-circle shadow">
+        <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}"
+             alt="Logo Bina Desa"
+             width="60"
+             class="rounded-circle">
     </div>
-    <h2>Daftar Akun Baru</h2>
-    <p class="text-muted">Bergabung dengan Sistem Bina Desa</p>
+    <h4 class="text-center">Daftar Akun Baru</h4>
+    <p class="text-center text-muted">Bergabung dengan Sistem Tanggap Darurat</p>
 </div>
 
 <form method="POST" action="{{ route('register.submit') }}">

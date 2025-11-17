@@ -1,21 +1,23 @@
 {{-- resources/views/pages/auth/login.blade.php --}}
-@extends('layouts.admin.auth') {{-- PERUBAHAN: gunakan layout auth --}}
+@extends('layouts.admin.auth')
 
-@section('title', 'Login - Bina Desa')
+@section('title', 'Login - Sistem Tanggap Darurat Bencana')
 
 @section('content')
 <div class="auth-logo">
     <div class="text-center mb-4">
-        <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}" alt="Logo Bina Desa" width="80" class="rounded-circle shadow">
+        <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}"
+             alt="Logo Bina Desa"
+             width="60"
+             class="rounded-circle">
     </div>
-    <h2>Sistem Bina Desa</h2>
-    <p class="text-muted">Platform Pengelolaan Data Desa</p>
+    <h4 class="text-center">Login Administrator</h4>
+    <p class="text-center text-muted">Masuk ke Sistem Tanggap Darurat</p>
 </div>
 
 <form method="POST" action="{{ route('login.submit') }}">
     @csrf
 
-    {{-- Error Messages --}}
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="mdi mdi-alert-circle-outline me-2"></i>
@@ -65,7 +67,7 @@
             <input class="form-check-input" type="checkbox" id="remember" name="remember"
                    {{ old('remember') ? 'checked' : '' }}>
             <label class="form-check-label" for="remember">
-                <i class="mdi mdi-check-circle-outline me-1"></i>Ingat saya
+                Ingat saya
             </label>
         </div>
     </div>

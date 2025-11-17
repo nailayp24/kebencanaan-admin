@@ -3,7 +3,7 @@
   <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
     <a class="navbar-brand brand-logo" href="{{ url('/dashboard') }}">
       <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}" alt="logo" width="35" class="me-2">
-      <span class="fw-bold text-primary">Bina Desa</span>
+   
     </a>
     <a class="navbar-brand brand-logo-mini" href="{{ url('/dashboard') }}">
       <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}" alt="logo" width="30">

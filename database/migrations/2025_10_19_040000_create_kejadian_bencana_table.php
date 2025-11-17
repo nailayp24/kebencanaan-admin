@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('rt')->nullable();
             $table->string('rw')->nullable();
             $table->string('dampak')->nullable();
-            $table->string('status_kejadian')->default('dilaporkan'); // PASTIKAN PAKAI status_kejadian
+            $table->string('status_kejadian')->default('dilaporkan'); 
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

@@ -8,9 +8,7 @@
             <p class="profile-name">
                 <i class="mdi mdi-account-circle me-2"></i>Admin Bina Desa
             </p>
-            <small class="designation text-muted">
-                <i class="mdi mdi-shield-account me-1"></i>Administrator
-            </small>
+            
           </div>
         </div>
       </div>
@@ -44,6 +42,13 @@
       <a class="nav-link" href="{{ route('posko-bencana.index') }}">
         <i class="menu-icon mdi mdi-home-assistant"></i>
         <span class="menu-title">Posko Bencana</span>
+      </a>
+    </li>
+
+      <li class="nav-item {{ request()->is('donasi-bencana*') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('donasi-bencana.index') }}">
+        <i class="menu-icon mdi mdi-hand-heart"></i>
+        <span class="menu-title">Donasi Bencana</span>
       </a>
     </li>
 

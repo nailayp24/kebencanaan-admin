@@ -6,6 +6,9 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\KejadianBencanaController;
 use App\Http\Controllers\PoskoBencanaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DonasiBencanaController;
+
+
 
 // Route utama - langsung ke login
 Route::get('/', function () {
@@ -23,5 +26,6 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('warga', WargaController::class);
 Route::resource('kejadian-bencana', KejadianBencanaController::class);
+Route::resource('donasi-bencana', DonasiBencanaController::class);
 Route::resource('posko-bencana', PoskoBencanaController::class);
 Route::resource('user', UserController::class);

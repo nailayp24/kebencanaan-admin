@@ -9,11 +9,15 @@ use Illuminate\Support\Facades\Validator;
 
 class KejadianBencanaController extends Controller
 {
-    public function index()
-    {
-        $kejadian = KejadianBencana::orderBy('tanggal', 'desc')->paginate(10);
-        return view('pages.kejadian-bencana.index', compact('kejadian'));
-    }
+   public function index(Request $request)
+{
+    $perPage = $request->get('per_page', 10);
+
+    $kejadian = KejadianBencana::orderBy('tanggal', 'desc')
+                ->paginate($perPage);
+
+    return view('pages.kejadian-bencana.index', compact('kejadian'));
+}
 
     public function create()
     {

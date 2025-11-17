@@ -1,13 +1,13 @@
-{{-- resources/views/admin/kejadian-bencana/index.blade.php --}}
+{{-- resources/views/pages/donasi-bencana/index.blade.php --}}
 @extends('layouts.admin.app')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>
-            <i class="mdi mdi-alert-circle-outline me-2"></i>Data Kejadian Bencana
+            <i class="mdi mdi-hand-heart me-2"></i>Data Donasi Bencana
         </h2>
-        <a href="{{ route('kejadian-bencana.create') }}" class="btn btn-primary">
-            <i class="mdi mdi-plus me-1"></i> Tambah Kejadian
+        <a href="{{ route('donasi-bencana.create') }}" class="btn btn-primary">
+            <i class="mdi mdi-plus me-1"></i> Tambah Donasi
         </a>
     </div>
 
@@ -34,54 +34,63 @@
                     <thead class="table-dark">
                         <tr>
                             <th width="50">No</th>
-                            <th>Jenis Bencana</th>
+                            <th>Donatur</th>
+                            <th>Kejadian Bencana</th>
+                            <th>Jenis Donasi</th>
+                            <th>Nilai</th>
                             <th>Tanggal</th>
-                            <th>Lokasi</th>
-                            <th>RT/RW</th>
-                            <th>Dampak</th>
-                            <th>Status</th>
                             <th width="120" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($kejadian as $item)
+                        @forelse($donasi as $item)
                             <tr>
-                                <td>{{ $loop->iteration + ($kejadian->currentPage() - 1) * $kejadian->perPage() }}</td>
+                                <td>{{ $loop->iteration + ($donasi->currentPage() - 1) * $donasi->perPage() }}</td>
                                 <td>
-                                    <strong>{{ $item->jenis_bencana }}</strong>
+                                    <strong>{{ $item->donatur_nama }}</strong>
+                                    @if ($item->keterangan)
+                                        <br><small class="text-muted">{{ Str::limit($item->keterangan, 50) }}</small>
+                                    @endif
                                 </td>
-                                <td>{{ $item->tanggal->format('d/m/Y') }}</td>
-                                <td>{{ Str::limit($item->lokasi_text, 30) }}</td>
                                 <td>
-                                    <span class="badge bg-secondary">{{ $item->rt }}/{{ $item->rw }}</span>
+                                    @if ($item->kejadianBencana)
+                                        <span class="badge bg-info">{{ $item->kejadianBencana->jenis_bencana }}</span><br>
+                                        <small>{{ Str::limit($item->kejadianBencana->lokasi_text, 40) }}</small>
+                                    @else
+                                        <span class="badge bg-warning">Data Kejadian Tidak Ditemukan</span>
+                                    @endif
                                 </td>
-                                <td>{{ Str::limit($item->dampak, 50) }}</td>
                                 <td>
-                                    @php
-                                        $statusColors = [
-                                            'dilaporkan' => 'warning',
-                                            'diverifikasi' => 'info',
-                                            'ditangani' => 'primary',
-                                            'selesai' => 'success',
-                                        ];
-                                    @endphp
-                                    <span class="badge bg-{{ $statusColors[$item->status_kejadian] ?? 'secondary' }}">
-                                        {{ ucfirst($item->status_kejadian) }}
+                                    <span
+                                        class="badge bg-{{ $item->jenis == 'uang' ? 'success' : ($item->jenis == 'barang' ? 'warning' : 'info') }}">
+                                        {{ $item->jenis_donasi }}
                                     </span>
                                 </td>
                                 <td>
+                                    @if ($item->nilai)
+                                        <strong>{{ $item->nilai_formatted }}</strong>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                                <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('kejadian-bencana.edit', $item->kejadian_id) }}"
-                                            class="btn btn-warning" title="Edit Kejadian">
+                                        <a href="{{ route('donasi-bencana.show', $item->donasi_id) }}" class="btn btn-info"
+                                            title="Lihat Detail">
+                                            <i class="mdi mdi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('donasi-bencana.edit', $item->donasi_id) }}"
+                                            class="btn btn-warning" title="Edit Donasi">
                                             <i class="mdi mdi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('kejadian-bencana.destroy', $item->kejadian_id) }}"
+                                        <form action="{{ route('donasi-bencana.destroy', $item->donasi_id) }}"
                                             method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger"
-                                                onclick="return confirm('Yakin ingin menghapus kejadian bencana {{ $item->jenis_bencana }}?')"
-                                                title="Hapus Kejadian">
+                                                onclick="return confirm('Yakin ingin menghapus donasi {{ $item->donatur_nama }}?')"
+                                                title="Hapus Donasi">
                                                 <i class="mdi mdi-delete"></i>
                                             </button>
                                         </form>
@@ -90,9 +99,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="mdi mdi-alert-off-outline me-2"></i>
-                                    Tidak ada data kejadian bencana
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="mdi mdi-hand-heart-outline me-2"></i>
+                                    Tidak ada data donasi bencana
                                 </td>
                             </tr>
                         @endforelse
@@ -100,20 +109,20 @@
                 </table>
             </div>
 
-            @if ($kejadian->hasPages())
+            @if ($donasi->hasPages())
                 <div class="mt-4 d-flex justify-content-between align-items-center">
                     <div class="text-muted small">
-                        {{ $kejadian->firstItem() }}-{{ $kejadian->lastItem() }} of {{ $kejadian->total() }}
+                        {{ $donasi->firstItem() }}-{{ $donasi->lastItem() }} of {{ $donasi->total() }}
                     </div>
 
                     <div class="d-flex align-items-center gap-1">
                         {{-- Previous --}}
-                        @if ($kejadian->onFirstPage())
+                        @if ($donasi->onFirstPage())
                             <button class="btn btn-light btn-sm" disabled>
                                 <i class="mdi mdi-chevron-left"></i>
                             </button>
                         @else
-                            <a href="{{ $kejadian->previousPageUrl() }}" class="btn btn-light btn-sm">
+                            <a href="{{ $donasi->previousPageUrl() }}" class="btn btn-light btn-sm">
                                 <i class="mdi mdi-chevron-left"></i>
                             </a>
                         @endif
@@ -121,17 +130,17 @@
                         {{-- Page Select --}}
                         <select class="form-select form-select-sm" style="width: 70px;"
                             onchange="window.location.href = this.value">
-                            @for ($page = 1; $page <= $kejadian->lastPage(); $page++)
-                                <option value="{{ $kejadian->url($page) }}"
-                                    {{ $page == $kejadian->currentPage() ? 'selected' : '' }}>
+                            @for ($page = 1; $page <= $donasi->lastPage(); $page++)
+                                <option value="{{ $donasi->url($page) }}"
+                                    {{ $page == $donasi->currentPage() ? 'selected' : '' }}>
                                     {{ $page }}
                                 </option>
                             @endfor
                         </select>
 
                         {{-- Next --}}
-                        @if ($kejadian->hasMorePages())
-                            <a href="{{ $kejadian->nextPageUrl() }}" class="btn btn-light btn-sm">
+                        @if ($donasi->hasMorePages())
+                            <a href="{{ $donasi->nextPageUrl() }}" class="btn btn-light btn-sm">
                                 <i class="mdi mdi-chevron-right"></i>
                             </a>
                         @else
