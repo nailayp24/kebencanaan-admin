@@ -33,7 +33,7 @@
             <form method="GET" action="{{ route('posko-bencana.index') }}" class="mb-4">
                 <div class="row g-3 align-items-end">
                     {{-- Filter Kejadian Bencana --}}
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label">Filter Kejadian Bencana</label>
                         <select name="kejadian_id" class="form-select" onchange="this.form.submit()">
                             <option value="">Semua Kejadian</option>
@@ -45,6 +45,9 @@
                             @endforeach
                         </select>
                     </div>
+
+                    {{-- Spacer untuk memberikan jarak --}}
+                    <div class="col-md-1"></div>
 
                     {{-- Search --}}
                     <div class="col-md-5">
