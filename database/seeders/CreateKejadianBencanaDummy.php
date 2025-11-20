@@ -9,12 +9,12 @@ use Faker\Factory;
 
 class CreateKejadianBencanaDummy extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $faker = Factory::create('id_ID');
+
+        // JANGAN gunakan truncate(), tapi delete() saja
+        DB::table('kejadian_bencana')->delete();
 
         $jenisBencana = [
             'Banjir', 'Kebakaran', 'Tanah Longsor', 'Gempa Bumi',
@@ -22,23 +22,20 @@ class CreateKejadianBencanaDummy extends Seeder
         ];
 
         $statusKejadian = ['dilaporkan', 'diverifikasi', 'ditangani', 'selesai'];
-
         $kota = ['Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Makassar', 'Semarang', 'Yogyakarta', 'Denpasar'];
         $kecamatan = ['Pusat', 'Utara', 'Selatan', 'Timur', 'Barat', 'Tengah'];
 
-        foreach (range(1, 15) as $index) {
+        foreach (range(1, 200) as $index) {
             $jenis = $faker->randomElement($jenisBencana);
             $tanggal = $faker->dateTimeBetween('-6 months', 'now');
-            $kotaPilihan = $faker->randomElement($kota);
-            $kecamatanPilihan = $faker->randomElement($kecamatan);
 
             DB::table('kejadian_bencana')->insert([
                 'jenis_bencana' => $jenis,
                 'tanggal' => $tanggal,
                 'lokasi_text' => "Jl. " . $faker->streetName() . " No. " . $faker->buildingNumber() .
                                ", Kelurahan " . $faker->citySuffix() .
-                               ", Kecamatan " . $kecamatanPilihan .
-                               ", Kota " . $kotaPilihan,
+                               ", Kecamatan " . $faker->randomElement($kecamatan) .
+                               ", Kota " . $faker->randomElement($kota),
                 'rt' => str_pad($faker->numberBetween(1, 10), 3, '0', STR_PAD_LEFT),
                 'rw' => str_pad($faker->numberBetween(1, 5), 3, '0', STR_PAD_LEFT),
                 'dampak' => $this->generateDampak($jenis, $faker),
@@ -48,42 +45,23 @@ class CreateKejadianBencanaDummy extends Seeder
                 'updated_at' => $tanggal,
             ]);
         }
-
-        $this->command->info('15 data kejadian bencana dummy berhasil dibuat!');
     }
 
     private function generateDampak($jenisBencana, $faker)
     {
         $dampakTemplates = [
-            'Banjir' => [
-                '{{number}} rumah terendam',
-                '{{number}} jiwa mengungsi',
-                '{{number}} hektar sawah tergenang',
-                'Tinggi air mencapai {{number}} meter'
-            ],
-            'Kebakaran' => [
-                '{{number}} rumah hangus',
-                '{{number}} korban luka-luka',
-                'Kerugian material Rp {{number}} juta',
-                '{{number}} unit kendaraan terbakar'
-            ],
-            'Tanah Longsor' => [
-                '{{number}} rumah tertimbun',
-                '{{number}} korban jiwa',
-                'Jalan sepanjang {{number}} meter tertutup',
-                '{{number}} keluarga terdampak'
-            ],
-            'Gempa Bumi' => [
-                'Skala {{number}} SR',
-                '{{number}} bangunan rusak',
-                '{{number}} jiwa mengungsi',
-                'Kekuatan {{number}} MMI'
-            ]
+            'Banjir' => ['{{number}} rumah terendam', '{{number}} jiwa mengungsi'],
+            'Kebakaran' => ['{{number}} rumah hangus', '{{number}} korban luka-luka'],
+            'Tanah Longsor' => ['{{number}} rumah tertimbun', '{{number}} korban jiwa'],
+            'Gempa Bumi' => ['Skala {{number}} SR', '{{number}} bangunan rusak'],
+            'Angin Topan' => ['{{number}} rumah rusak', '{{number}} pohon tumbang'],
+            'Kekeringan' => ['{{number}} desa terdampak', '{{number}} hektar sawah gagal panen'],
+            'Tsunami' => ['Tinggi gelombang {{number}} meter', '{{number}} bangunan hancur'],
+            'Gunung Meletus' => ['Tinggi abu {{number}} meter', '{{number}} desa terkubur abu']
         ];
 
         $template = $faker->randomElement($dampakTemplates[$jenisBencana] ?? ['{{number}} unit terdampak']);
         $number = $faker->numberBetween(1, 100);
-
         return str_replace('{{number}}', $number, $template);
     }
 }

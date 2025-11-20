@@ -10,14 +10,23 @@ use Illuminate\Support\Facades\Validator;
 class KejadianBencanaController extends Controller
 {
    public function index(Request $request)
-{
-    $perPage = $request->get('per_page', 10);
+    {
+        $filterableColumns = ['jenis_bencana', 'status_kejadian'];
+        $searchableColumns = ['jenis_bencana', 'lokasi_text', 'dampak', 'keterangan'];
 
-    $kejadian = KejadianBencana::orderBy('tanggal', 'desc')
-                ->paginate($perPage);
+        $kejadian = KejadianBencana::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->orderBy('tanggal', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
-    return view('pages.kejadian-bencana.index', compact('kejadian'));
-}
+        // Untuk dropdown filter
+        $jenisBencanaOptions = KejadianBencana::distinct()->pluck('jenis_bencana');
+        $statusOptions = ['dilaporkan', 'diverifikasi', 'ditangani', 'selesai'];
+
+        return view('pages.kejadian-bencana.index', compact('kejadian', 'jenisBencanaOptions', 'statusOptions'));
+    }
+
 
     public function create()
     {

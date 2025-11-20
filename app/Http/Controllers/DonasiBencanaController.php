@@ -10,13 +10,27 @@ use Illuminate\Support\Facades\Validator;
 
 class DonasiBencanaController extends Controller
 {
-    public function index()
+        public function index(Request $request)
     {
-        $donasi = DonasiBencana::with('kejadianBencana')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $filterableColumns = ['kejadian_id', 'jenis'];
+        $searchableColumns = ['donatur_nama', 'keterangan'];
 
-        return view('pages.donasi-bencana.index', compact('donasi'));
+        $donasi = DonasiBencana::with('kejadianBencana')
+            ->filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Untuk dropdown filter
+        $kejadianOptions = KejadianBencana::orderBy('tanggal', 'desc')->get();
+        $jenisOptions = [
+            'uang' => 'Uang',
+            'barang' => 'Barang',
+            'jasa' => 'Jasa'
+        ];
+
+        return view('pages.donasi-bencana.index', compact('donasi', 'kejadianOptions', 'jenisOptions'));
     }
 
     public function create()

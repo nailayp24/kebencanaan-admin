@@ -13,6 +13,7 @@ class CreatePoskoBencanaDummy extends Seeder
     {
         $faker = Factory::create('id_ID');
 
+        // JANGAN gunakan truncate(), tapi delete() saja
         DB::table('posko_bencana')->delete();
 
         // Ambil semua ID kejadian bencana

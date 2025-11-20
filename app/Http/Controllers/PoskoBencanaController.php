@@ -9,15 +9,26 @@ use Illuminate\Support\Facades\Validator;
 
 class PoskoBencanaController extends Controller
 {
-    public function index()
+      public function index(Request $request)
     {
-        $posko = PoskoBencana::with(['kejadianBencana'])->orderBy('created_at', 'desc')->paginate(10);
-        return view('pages.posko-bencana.index', compact('posko'));
+        $filterableColumns = ['kejadian_id'];
+        $searchableColumns = ['nama', 'alamat', 'kontak', 'penanggung_jawab'];
+
+        $posko = PoskoBencana::with(['kejadianBencana'])
+            ->filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Ambil data kejadian untuk dropdown filter
+        $kejadianOptions = KejadianBencana::orderBy('tanggal', 'desc')->get();
+
+        return view('pages.posko-bencana.index', compact('posko', 'kejadianOptions'));
     }
 
     public function create()
     {
-        // SESUAIKAN: gunakan 'status_kejadian' bukan 'status'
         $kejadian = KejadianBencana::where(function($query) {
             $query->where('status_kejadian', '!=', 'selesai')
                   ->orWhereIn('status_kejadian', ['dilaporkan', 'diverifikasi', 'ditangani']);

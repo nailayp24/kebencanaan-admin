@@ -29,6 +29,100 @@
 
     <div class="card">
         <div class="card-body">
+               {{-- FILTER & SEARCH FORM --}}
+            <form method="GET" action="{{ route('kejadian-bencana.index') }}" class="mb-4">
+                <div class="row g-3 align-items-end">
+                    {{-- Filter Jenis Bencana --}}
+                    <div class="col-md-3">
+                        <label class="form-label">Jenis Bencana</label>
+                        <select name="jenis_bencana" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Jenis</option>
+                            @foreach($jenisBencanaOptions as $jenis)
+                                <option value="{{ $jenis }}"
+                                    {{ request('jenis_bencana') == $jenis ? 'selected' : '' }}>
+                                    {{ $jenis }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Filter Status --}}
+                    <div class="col-md-3">
+                        <label class="form-label">Status Kejadian</label>
+                        <select name="status_kejadian" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Status</option>
+                            @foreach($statusOptions as $status)
+                                @php
+                                    $statusColors = [
+                                        'dilaporkan' => 'warning',
+                                        'diverifikasi' => 'info',
+                                        'ditangani' => 'primary',
+                                        'selesai' => 'success',
+                                    ];
+                                @endphp
+                                <option value="{{ $status }}"
+                                    {{ request('status_kejadian') == $status ? 'selected' : '' }}>
+                                    {{ ucfirst($status) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Search --}}
+                    <div class="col-md-4">
+                        <label class="form-label">Pencarian</label>
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control"
+                                   value="{{ request('search') }}"
+                                   placeholder="Cari jenis bencana, lokasi, atau dampak...">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="mdi mdi-magnify"></i> Search
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
+                                   class="btn btn-outline-secondary">
+                                    Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Reset Filter --}}
+                    <div class="col-md-2">
+                        <a href="{{ route('kejadian-bencana.index') }}" class="btn btn-secondary w-100">
+                            <i class="mdi mdi-refresh"></i> Reset
+                        </a>
+                    </div>
+
+                    {{-- Info Filter Aktif --}}
+                    @if(request('jenis_bencana') || request('status_kejadian') || request('search'))
+                        <div class="col-12">
+                            <div class="alert alert-info py-2">
+                                <small>
+                                    <i class="mdi mdi-information-outline me-1"></i>
+                                    Filter aktif:
+                                    @if(request('jenis_bencana'))
+                                        <span class="badge bg-primary me-2">
+                                            Jenis: {{ request('jenis_bencana') }}
+                                        </span>
+                                    @endif
+                                    @if(request('status_kejadian'))
+                                        <span class="badge bg-primary me-2">
+                                            Status: {{ ucfirst(request('status_kejadian')) }}
+                                        </span>
+                                    @endif
+                                    @if(request('search'))
+                                        <span class="badge bg-primary me-2">
+                                            Pencarian: "{{ request('search') }}"
+                                        </span>
+                                    @endif
+                                </small>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -46,7 +140,7 @@
                     <tbody>
                         @forelse($kejadian as $item)
                             <tr>
-                                <td>{{ $loop->iteration + ($kejadian->currentPage() - 1) * $kejadian->perPage() }}</td>
+                               <td>{{ ($kejadian->currentPage() - 1) * $kejadian->perPage() + $loop->iteration }}</td>
                                 <td>
                                     <strong>{{ $item->jenis_bencana }}</strong>
                                 </td>
@@ -90,58 +184,24 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
+                                 <td colspan="8" class="text-center text-muted py-4">
                                     <i class="mdi mdi-alert-off-outline me-2"></i>
-                                    Tidak ada data kejadian bencana
+                                    @if(request('jenis_bencana') || request('status_kejadian') || request('search'))
+                                        Tidak ada data kejadian bencana yang sesuai dengan filter
+                                    @else
+                                        Tidak ada data kejadian bencana
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+                 <div class="mt-3">
+                    {{ $kejadian->links('pagination::bootstrap-5') }}
+                </div>
             </div>
 
-            @if ($kejadian->hasPages())
-                <div class="mt-4 d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
-                        {{ $kejadian->firstItem() }}-{{ $kejadian->lastItem() }} of {{ $kejadian->total() }}
-                    </div>
 
-                    <div class="d-flex align-items-center gap-1">
-                        {{-- Previous --}}
-                        @if ($kejadian->onFirstPage())
-                            <button class="btn btn-light btn-sm" disabled>
-                                <i class="mdi mdi-chevron-left"></i>
-                            </button>
-                        @else
-                            <a href="{{ $kejadian->previousPageUrl() }}" class="btn btn-light btn-sm">
-                                <i class="mdi mdi-chevron-left"></i>
-                            </a>
-                        @endif
-
-                        {{-- Page Select --}}
-                        <select class="form-select form-select-sm" style="width: 70px;"
-                            onchange="window.location.href = this.value">
-                            @for ($page = 1; $page <= $kejadian->lastPage(); $page++)
-                                <option value="{{ $kejadian->url($page) }}"
-                                    {{ $page == $kejadian->currentPage() ? 'selected' : '' }}>
-                                    {{ $page }}
-                                </option>
-                            @endfor
-                        </select>
-
-                        {{-- Next --}}
-                        @if ($kejadian->hasMorePages())
-                            <a href="{{ $kejadian->nextPageUrl() }}" class="btn btn-light btn-sm">
-                                <i class="mdi mdi-chevron-right"></i>
-                            </a>
-                        @else
-                            <button class="btn btn-light btn-sm" disabled>
-                                <i class="mdi mdi-chevron-right"></i>
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
 @endsection

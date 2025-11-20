@@ -29,6 +29,75 @@
 
     <div class="card">
         <div class="card-body">
+               {{-- FILTER & SEARCH FORM --}}
+            <form method="GET" action="{{ route('posko-bencana.index') }}" class="mb-4">
+                <div class="row g-3 align-items-end">
+                    {{-- Filter Kejadian Bencana --}}
+                    <div class="col-md-3">
+                        <label class="form-label">Filter Kejadian Bencana</label>
+                        <select name="kejadian_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Kejadian</option>
+                            @foreach($kejadianOptions as $kejadian)
+                                <option value="{{ $kejadian->kejadian_id }}"
+                                    {{ request('kejadian_id') == $kejadian->kejadian_id ? 'selected' : '' }}>
+                                    {{ $kejadian->jenis_bencana }} - {{ $kejadian->lokasi_text }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Search --}}
+                    <div class="col-md-5">
+                        <label class="form-label">Pencarian</label>
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control"
+                                   value="{{ request('search') }}"
+                                   placeholder="Cari nama posko, alamat, kontak, atau penanggung jawab...">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="mdi mdi-magnify"></i> Search
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
+                                   class="btn btn-outline-secondary">
+                                    Clear
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Reset Filter --}}
+                    <div class="col-md-2">
+                        <a href="{{ route('posko-bencana.index') }}" class="btn btn-secondary w-100">
+                            <i class="mdi mdi-refresh"></i> Reset
+                        </a>
+                    </div>
+
+                    {{-- Info Filter Aktif --}}
+                    @if(request('kejadian_id') || request('search'))
+                        <div class="col-12">
+                            <div class="alert alert-info py-2">
+                                <small>
+                                    <i class="mdi mdi-information-outline me-1"></i>
+                                    Filter aktif:
+                                    @if(request('kejadian_id'))
+                                        @php
+                                            $selectedKejadian = $kejadianOptions->firstWhere('kejadian_id', request('kejadian_id'));
+                                        @endphp
+                                        <span class="badge bg-primary me-2">
+                                            Kejadian: {{ $selectedKejadian ? $selectedKejadian->jenis_bencana : 'Tidak Ditemukan' }}
+                                        </span>
+                                    @endif
+                                    @if(request('search'))
+                                        <span class="badge bg-primary me-2">
+                                            Pencarian: "{{ request('search') }}"
+                                        </span>
+                                    @endif
+                                </small>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </form>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -45,7 +114,7 @@
                     <tbody>
                         @forelse($posko as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                               <td>{{ ($posko->currentPage() - 1) * $posko->perPage() + $loop->iteration }}</td>
                                 <td>
                                     <strong>{{ $item->nama }}</strong>
                                 </td>
@@ -85,21 +154,24 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
+                                 <td colspan="7" class="text-center text-muted py-4">
                                     <i class="mdi mdi-home-remove-outline me-2"></i>
-                                    Tidak ada data posko bencana
+                                    @if(request('kejadian_id') || request('search'))
+                                        Tidak ada data posko bencana yang sesuai dengan filter
+                                    @else
+                                        Tidak ada data posko bencana
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+                <div class="mt-3">
+                    {{ $posko->links('pagination::bootstrap-5') }}
+                </div>
             </div>
 
-            @if ($posko->hasPages())
-                <div class="mt-4">
-                    {{ $posko->links() }}
-                </div>
-            @endif
+
         </div>
     </div>
 @endsection

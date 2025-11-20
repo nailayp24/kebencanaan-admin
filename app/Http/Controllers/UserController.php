@@ -1,20 +1,46 @@
 <?php
 namespace App\Http\Controllers;
 // tes
+use id;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-         $dataUser = User::all();
+    public function index(Request $request)
+     {
+        $searchableColumns = ['name', 'email'];
+
+        $query = User::query();
+
+        // Handle search
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+                }
+            });
+        }
+
+        // Handle filter verification status
+        if ($request->filled('email_verified_at')) {
+            if ($request->email_verified_at === 'verified') {
+                $query->whereNotNull('email_verified_at');
+            } elseif ($request->email_verified_at === 'not_verified') {
+                $query->whereNull('email_verified_at');
+            }
+        }
+
+        $dataUser = $query->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('pages.user.index', compact('dataUser'));
     }
 

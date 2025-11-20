@@ -38,6 +38,50 @@
 
 <div class="card">
     <div class="card-body">
+         {{-- FILTER & SEARCH FORM --}}
+        <form method="GET" action="{{ route('user.index') }}" class="mb-4">
+            <div class="row g-3 align-items-end">
+                {{-- Search --}}
+                <div class="col-md-6">
+                    <label class="form-label">Pencarian</label>
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control"
+                               value="{{ request('search') }}"
+                               placeholder="Cari nama atau email...">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-magnify"></i> Search
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}"
+                               class="btn btn-outline-secondary">
+                                Clear
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Filter Status --}}
+                <div class="col-md-3">
+                    <label class="form-label">Status Verifikasi</label>
+                    <select name="email_verified_at" class="form-select" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="verified" {{ request('email_verified_at') == 'verified' ? 'selected' : '' }}>
+                            Terverifikasi
+                        </option>
+                        <option value="not_verified" {{ request('email_verified_at') == 'not_verified' ? 'selected' : '' }}>
+                            Belum Verifikasi
+                        </option>
+                    </select>
+                </div>
+
+                {{-- Reset Filter --}}
+                <div class="col-md-3">
+                    <a href="{{ route('user.index') }}" class="btn btn-secondary w-100">
+                        <i class="mdi mdi-refresh"></i> Reset Filter
+                    </a>
+                </div>
+            </div>
+        </form>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
@@ -45,6 +89,7 @@
                         <th width="50">No</th>
                         <th>Nama</th>
                         <th>Email</th>
+                        <th>Status Verifikasi</th>
                         <th>Tanggal Dibuat</th>
                         <th width="120" class="text-center">Aksi</th>
                     </tr>
@@ -52,9 +97,16 @@
                 <tbody>
                     @forelse($dataUser as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                       <td>{{ ($dataUser->currentPage() - 1) * $dataUser->perPage() + $loop->iteration }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->email }}</td>
+                             <td>
+                                @if($item->email_verified_at)
+                                    <span class="badge bg-success">Terverifikasi</span>
+                                @else
+                                    <span class="badge bg-warning">Belum Verifikasi</span>
+                                @endif
+                            </td>
                             <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
@@ -93,14 +145,12 @@
                     @endforelse
                 </tbody>
             </table>
+             <div class="mt-3">
+                    {{ $dataUser->links('pagination::bootstrap-5') }}
+                </div>
         </div>
 
-        {{-- HAPUS BAGIAN INI (Pagination) --}}
-        {{-- @if($dataUser->hasPages())
-        <div class="mt-4">
-            {{ $dataUser->links() }}
-        </div>
-        @endif --}}
+
 
     </div>
 </div>

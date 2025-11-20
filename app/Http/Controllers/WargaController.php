@@ -8,10 +8,26 @@ use Illuminate\Support\Facades\Validator;
 
 class WargaController extends Controller
 {
-    public function index()
+  public function index(Request $request)
     {
-         $warga = Warga::orderBy('nama')->paginate(10);
-        return view('pages.warga.index', compact('warga'));
+        $filterableColumns = ['jenis_kelamin', 'agama', 'pekerjaan'];
+        $searchableColumns = ['no_ktp', 'nama', 'telp', 'email'];
+
+        $warga = Warga::filter($request, $filterableColumns)
+            ->search($request, $searchableColumns)
+            ->orderBy('nama')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Untuk dropdown filter
+        $agamaOptions = Warga::distinct()->pluck('agama');
+        $pekerjaanOptions = Warga::distinct()->pluck('pekerjaan');
+        $jenisKelaminOptions = [
+            'L' => 'Laki-laki',
+            'P' => 'Perempuan'
+        ];
+
+        return view('pages.warga.index', compact('warga', 'agamaOptions', 'pekerjaanOptions', 'jenisKelaminOptions'));
     }
 
     public function create()

@@ -11,18 +11,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // // Ambil data statistik
-        // $totalWarga = Warga::count();
-        // $totalKejadian = KejadianBencana::count();
-        // $totalPosko = PoskoBencana::count();
-        // $totalUser = User::count();
-
-        // // Ambil kejadian terbaru
-        // $kejadianTerbaru = KejadianBencana::orderBy('tanggal', 'desc')
-        //     ->take(5)
-        //     ->get();
-
-        // Kirim data ke view menggunakan compact
+     
         return view('pages.dashboard');
     }
 };
