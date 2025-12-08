@@ -13,6 +13,14 @@
     </div>
     <h4 class="text-center">Login Administrator</h4>
     <p class="text-center text-muted">Masuk ke Sistem Tanggap Darurat</p>
+
+    {{-- Info jika sudah login --}}
+    @if(Auth::check())
+    <div class="alert alert-info">
+        <i class="mdi mdi-information-outline me-2"></i>
+        Anda sudah login sebagai: <strong>{{ Auth::user()->name }}</strong>
+    </div>
+    @endif
 </div>
 
 <form method="POST" action="{{ route('login.submit') }}">

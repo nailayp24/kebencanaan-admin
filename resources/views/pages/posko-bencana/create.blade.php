@@ -11,8 +11,9 @@
                 </h4>
             </div>
             <div class="card-body">
-                <form action="{{ route('posko-bencana.store') }}" method="POST">
+                <form action="{{ route('posko-bencana.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+
 
                     @if($errors->any())
                         <div class="alert alert-danger">
@@ -102,6 +103,21 @@
                                placeholder="Contoh: 081234567890" required>
                         @error('kontak')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                      {{-- ===== INPUT MULTIPLE FILE UPLOAD ===== --}}
+                    <div class="mb-4">
+                        <label for="foto_posko" class="form-label">Foto Posko</label>
+                        <input type="file" class="form-control @error('foto_posko.*') is-invalid @enderror"
+                               id="foto_posko" name="foto_posko[]" multiple
+                               accept=".jpg,.jpeg,.png,.pdf">
+                        <div class="form-text">
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            Bisa upload beberapa file sekaligus (foto atau dokumen PDF). Maksimal 2MB per file.
+                        </div>
+                        @error('foto_posko.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 

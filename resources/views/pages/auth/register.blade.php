@@ -83,6 +83,29 @@
         </div>
     </div>
 
+
+
+    {{-- Tambahkan input role jika register oleh Super Admin --}}
+    @if(Auth::check() && Auth::user()->role == 'super_admin')
+    <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select class="form-select @error('role') is-invalid @enderror" name="role">
+            <option value="user" selected>User Biasa</option>
+            <option value="admin">Administrator</option>
+            <option value="super_admin">Super Admin</option>
+        </select>
+        @error('role')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+        <small class="text-muted">
+            <i class="mdi mdi-information-outline"></i>
+            Hanya Super Admin yang bisa menentukan role saat registrasi
+        </small>
+    </div>
+    @else
+    <input type="hidden" name="role" value="user">
+    @endif
+
     <div class="mb-3">
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
@@ -100,7 +123,7 @@
 
     <div class="auth-footer">
         <span class="text-muted">Sudah punya akun?</span>
-        <a href="{{ route('login') }}" class="text-decoration-none">Login di sini</a>
+        <a href="{{ route('auth.login') }}" class="text-decoration-none">Login di sini</a>
     </div>
 </form>
 @endsection

@@ -11,7 +11,7 @@
                 </h4>
             </div>
             <div class="card-body">
-                <form action="{{ route('kejadian-bencana.store') }}" method="POST">
+                <form action="{{ route('kejadian-bencana.store') }}" method="POST"  enctype="multipart/form-data">>
                     @csrf
 
                     @if ($errors->any())
@@ -138,6 +138,21 @@
                         </div>
                         @error('keterangan')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                       {{-- ===== INPUT MULTIPLE FILE UPLOAD ===== --}}
+                    <div class="mb-4">
+                        <label for="foto_berita_acara" class="form-label">Foto / Berita Acara</label>
+                        <input type="file" class="form-control @error('foto_berita_acara.*') is-invalid @enderror"
+                               id="foto_berita_acara" name="foto_berita_acara[]" multiple
+                               accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                        <div class="form-text">
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            Upload foto atau dokumen pendukung kejadian bencana. Bisa multiple files.
+                        </div>
+                        @error('foto_berita_acara.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 

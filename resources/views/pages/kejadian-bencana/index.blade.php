@@ -134,7 +134,7 @@
                             <th>RT/RW</th>
                             <th>Dampak</th>
                             <th>Status</th>
-                            <th width="120" class="text-center">Aksi</th>
+                            <th width="150" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,6 +165,11 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
+                                              {{-- TAMBAH BUTTON SHOW --}}
+                                        <a href="{{ route('kejadian-bencana.show', $item->kejadian_id) }}"
+                                           class="btn btn-info" title="Lihat Detail">
+                                            <i class="mdi mdi-eye"></i>
+                                        </a>
                                         <a href="{{ route('kejadian-bencana.edit', $item->kejadian_id) }}"
                                             class="btn btn-warning" title="Edit Kejadian">
                                             <i class="mdi mdi-pencil"></i>

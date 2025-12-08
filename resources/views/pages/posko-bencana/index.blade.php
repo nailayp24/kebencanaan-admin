@@ -111,7 +111,7 @@
                             <th>Alamat</th>
                             <th>Kontak</th>
                             <th>Penanggung Jawab</th>
-                            <th width="120" class="text-center">Aksi</th>
+                           <th width="150" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,6 +138,11 @@
                                 <td>{{ $item->penanggung_jawab }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
+                                         {{-- TAMBAH BUTTON SHOW --}}
+                                        <a href="{{ route('posko-bencana.show', $item->posko_id) }}"
+                                           class="btn btn-info" title="Lihat Detail">
+                                            <i class="mdi mdi-eye"></i>
+                                        </a>
                                         <a href="{{ route('posko-bencana.edit', $item->posko_id) }}"
                                             class="btn btn-warning" title="Edit Posko">
                                             <i class="mdi mdi-pencil"></i>

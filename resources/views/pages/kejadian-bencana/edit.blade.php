@@ -12,7 +12,7 @@
                 <p class="card-title-desc text-muted">Perbarui informasi kejadian bencana dengan data yang valid</p>
             </div>
             <div class="card-body">
-                <form action="{{ route('kejadian-bencana.update', $kejadian->kejadian_id) }}" method="POST">
+                <form action="{{ route('kejadian-bencana.update', $kejadian->kejadian_id) }}" method="POST" enctype="multipart/form-data">>
                     @csrf
                     @method('PUT')
 
@@ -140,6 +140,62 @@
                         </div>
                         @error('keterangan')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                     {{-- ===== TAMPILKAN FILE YANG SUDAH DIUPLOAD ===== --}}
+                    <div class="mb-4">
+                        <label class="form-label">Foto / Berita Acara Terupload</label>
+
+                        @if($mediaFiles->count() > 0)
+                            <div class="row">
+                                @foreach($mediaFiles as $file)
+                                    <div class="col-md-3 mb-3">
+                                        <div class="card border">
+                                            <div class="card-body p-2 text-center">
+                                                @if(str_contains($file->mime_type, 'image'))
+                                                    <img src="{{ asset('storage/uploads/kejadian_bencana/' . $file->file_name) }}"
+                                                         class="img-thumbnail mb-2" style="height: 100px; object-fit: cover;">
+                                                @elseif(str_contains($file->mime_type, 'pdf'))
+                                                    <i class="mdi mdi-file-pdf-box" style="font-size: 48px; color: #e74c3c;"></i>
+                                                    <p class="small mt-2 text-truncate">{{ $file->file_name }}</p>
+                                                @else
+                                                    <i class="mdi mdi-file-document-outline" style="font-size: 48px;"></i>
+                                                    <p class="small mt-2 text-truncate">{{ $file->file_name }}</p>
+                                                @endif
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="delete_media[]" value="{{ $file->media_id }}" id="delete_{{ $file->media_id }}">
+                                                    <label class="form-check-label small" for="delete_{{ $file->media_id }}">
+                                                        Hapus file ini
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="alert alert-info">
+                                <i class="mdi mdi-information-outline me-2"></i>
+                                Belum ada file terupload
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- ===== INPUT UNTUK UPLOAD FILE BARU ===== --}}
+                    <div class="mb-4">
+                        <label for="foto_berita_acara" class="form-label">Upload File Baru</label>
+                        <input type="file" class="form-control @error('foto_berita_acara.*') is-invalid @enderror"
+                               id="foto_berita_acara" name="foto_berita_acara[]" multiple
+                               accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                        <div class="form-text">
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            Pilih file baru untuk ditambahkan. Bisa upload beberapa file sekaligus.
+                        </div>
+                        @error('foto_berita_acara.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 

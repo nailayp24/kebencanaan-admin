@@ -11,7 +11,7 @@
                 </h4>
             </div>
             <div class="card-body">
-                <form action="{{ route('donasi-bencana.store') }}" method="POST">
+                <form action="{{ route('donasi-bencana.store') }}" method="POST"  enctype="multipart/form-data">>
                     @csrf
 
                     @if ($errors->any())
@@ -97,6 +97,21 @@
                             placeholder="Keterangan tambahan tentang donasi">{{ old('keterangan') }}</textarea>
                         @error('keterangan')
                             <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                       {{-- ===== INPUT MULTIPLE FILE UPLOAD ===== --}}
+                    <div class="mb-4">
+                        <label for="bukti_donasi" class="form-label">Bukti Donasi</label>
+                        <input type="file" class="form-control @error('bukti_donasi.*') is-invalid @enderror"
+                               id="bukti_donasi" name="bukti_donasi[]" multiple
+                               accept=".jpg,.jpeg,.png,.pdf">
+                        <div class="form-text">
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            Upload bukti donasi (foto struk, kwitansi, atau dokumen). Bisa multiple files.
+                        </div>
+                        @error('bukti_donasi.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 

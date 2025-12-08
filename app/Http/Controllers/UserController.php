@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 // tes
-use id;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage; 
 
 class UserController extends Controller
 {
@@ -14,8 +14,13 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-     {
-        $searchableColumns = ['name', 'email'];
+    {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
+        $searchableColumns = ['name', 'email', 'role'];
 
         $query = User::query();
 
@@ -49,6 +54,11 @@ class UserController extends Controller
      */
     public function create()
     {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         return view('pages.user.create');
     }
 
@@ -57,11 +67,18 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         // Validasi data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
+            'role' => 'required|in:super_admin,admin,user',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'name.required' => 'Nama lengkap harus diisi',
             'email.required' => 'Email harus diisi',
@@ -70,6 +87,11 @@ class UserController extends Controller
             'password.required' => 'Password harus diisi',
             'password.min' => 'Password minimal 8 karakter',
             'password.confirmed' => 'Konfirmasi password tidak sesuai',
+            'role.required' => 'Role harus dipilih',
+            'role.in' => 'Role tidak valid',
+            'profile_picture.image' => 'File harus berupa gambar',
+            'profile_picture.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp',
+            'profile_picture.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         if ($validator->fails()) {
@@ -79,9 +101,18 @@ class UserController extends Controller
                 ->with('error', 'Terjadi kesalahan validasi');
         }
 
-        $data['name'] = $request->name;
-        $data['email'] = $request->email;
-        $data['password'] = Hash::make($request->password);
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ];
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $data['profile_picture'] = $path;
+        }
 
         User::create($data);
 
@@ -101,6 +132,11 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         $dataUser = User::findOrFail($id);
         return view('pages.user.edit', compact('dataUser'));
     }
@@ -110,6 +146,11 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         $user = User::findOrFail($id);
 
         // Validasi data
@@ -117,6 +158,8 @@ class UserController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|min:8|confirmed',
+            'role' => 'required|in:super_admin,admin,user',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ], [
             'name.required' => 'Nama lengkap harus diisi',
             'email.required' => 'Email harus diisi',
@@ -124,6 +167,11 @@ class UserController extends Controller
             'email.unique' => 'Email sudah terdaftar',
             'password.min' => 'Password minimal 8 karakter',
             'password.confirmed' => 'Konfirmasi password tidak sesuai',
+            'role.required' => 'Role harus dipilih',
+            'role.in' => 'Role tidak valid',
+            'profile_picture.image' => 'File harus berupa gambar',
+            'profile_picture.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp',
+            'profile_picture.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         if ($validator->fails()) {
@@ -135,10 +183,29 @@ class UserController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->role = $request->role;
 
         // Update password hanya jika diisi
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
+        }
+
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Hapus foto lama jika ada
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            // Simpan foto baru
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile_picture = $path;
+        } elseif ($request->input('remove_profile_picture') == '1') {
+            // Hapus foto jika user memilih untuk menghapus
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+                $user->profile_picture = null;
+            }
         }
 
         $user->save();
@@ -151,6 +218,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        // **CEK APAKAH USER ADALAH SUPER ADMIN**
+        if (Auth::user()->role !== 'super_admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         $user = User::findOrFail($id);
 
         // Cek apakah user sedang login
@@ -158,120 +230,13 @@ class UserController extends Controller
             return redirect()->route('user.index')->with('error', 'Tidak dapat menghapus akun sendiri!');
         }
 
+        // Hapus profile picture jika ada
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
         $user->delete();
+
         return redirect()->route('user.index')->with('success', 'Data User Berhasil Dihapus');
     }
-
-    /**
-     * Show login form
-     */
-    public function showLoginForm()
-    {
-        return view('pages.auth.login');
-    }
-
-    /**
-     * Handle login process
-     */
-    public function login(Request $request)
-    {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ], [
-            'email.required' => 'Email harus diisi',
-            'email.email' => 'Format email tidak valid',
-            'password.required' => 'Password harus diisi',
-            'password.min' => 'Password minimal 8 karakter',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput($request->except('password'))
-                ->with('error', 'Terjadi kesalahan validasi');
-        }
-
-        // Cek apakah email ada di database
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return redirect()->back()
-                ->withErrors(['email' => 'Email tidak ditemukan.'])
-                ->withInput($request->except('password'))
-                ->with('error', 'Login gagal');
-        }
-
-        // Cek password menggunakan Hash::check
-        if (!Hash::check($request->password, $user->password)) {
-            return redirect()->back()
-                ->withErrors(['password' => 'Password yang dimasukkan salah.'])
-                ->withInput($request->except('password'))
-                ->with('error', 'Login gagal');
-        }
-
-        // Login user
-        Auth::login($user, $request->boolean('remember'));
-
-        // Redirect ke dashboard
-        return redirect()->route('dashboard')
-            ->with('success', 'Login berhasil! Selamat datang ' . $user->name);
-    }
-
-    /**
-     * Handle logout process
-     */
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/login')->with('success', 'Logout berhasil!');
-    }
-
-    public function showRegisterForm()
-{
-    return view('pages.auth.register'); // Pastikan mengarah ke view yang benar
-}
-
-/**
- * Handle registration process
- */
-public function register(Request $request)
-{
-    // Validasi data
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:100',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8|confirmed',
-        'terms' => 'required'
-    ], [
-        'name.required' => 'Nama lengkap harus diisi',
-        'email.required' => 'Email harus diisi',
-        'email.email' => 'Format email tidak valid',
-        'email.unique' => 'Email sudah terdaftar',
-        'password.required' => 'Password harus diisi',
-        'password.min' => 'Password minimal 8 karakter',
-        'password.confirmed' => 'Konfirmasi password tidak sesuai',
-        'terms.required' => 'Anda harus menyetujui syarat dan ketentuan',
-    ]);
-
-    if ($validator->fails()) {
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput()
-            ->with('error', 'Terjadi kesalahan validasi');
-    }
-
-    // Create user
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
-
-    return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
-}
 }
