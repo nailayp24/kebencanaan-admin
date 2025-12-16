@@ -1,41 +1,26 @@
 <?php
-// database/seeders/CreatePoskoBencanaDummy.php
 
-namespace Database\Seeders;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Faker\Factory;
-
-class CreatePoskoBencanaDummy extends Seeder
+return new class extends Migration
 {
-    public function run(): void
+    public function up(): void
     {
-        $faker = Factory::create('id_ID');
-
-        DB::table('posko_bencana')->delete();
-
-        // Ambil semua ID kejadian bencana
-        $kejadianIds = DB::table('kejadian_bencana')->pluck('kejadian_id')->toArray();
-
-        if (empty($kejadianIds)) {
-            return;
-        }
-
-        $kotaIndonesia = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Palembang', 'Denpasar'];
-
-        for ($i = 1; $i <= 200; $i++) {
-            $kota = $faker->randomElement($kotaIndonesia);
-
-            DB::table('posko_bencana')->insert([
-                'kejadian_id' => $faker->randomElement($kejadianIds),
-                'nama' => 'Posko ' . $faker->randomElement(['Utama', 'Bantuan', 'Evakuasi', 'Kesehatan']) . ' ' . $kota,
-                'alamat' => 'Jl. ' . $faker->streetName . ' No. ' . $faker->buildingNumber . ', ' . $kota,
-                'kontak' => '08' . $faker->randomElement([1,2,3,8,9]) . $faker->numerify('#########'),
-                'penanggung_jawab' => $faker->name,
-                'created_at' => $faker->dateTimeBetween('-3 months', 'now'),
-                'updated_at' => now(),
-            ]);
-        }
+        Schema::create('posko_bencana', function (Blueprint $table) {
+            $table->id('posko_id');
+            $table->foreignId('kejadian_id')->constrained('kejadian_bencana', 'kejadian_id')->onDelete('restrict');
+            $table->string('nama');
+            $table->string('alamat');
+            $table->string('kontak');
+            $table->string('penanggung_jawab');
+            $table->timestamps();
+        });
     }
-}
+
+    public function down(): void
+    {
+        Schema::dropIfExists('posko_bencana');
+    }
+};
