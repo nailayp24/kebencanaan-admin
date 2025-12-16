@@ -3,26 +3,26 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WargaController;
-use App\Http\Controllers\KejadianBencanaController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PoskoBencanaController;
 use App\Http\Controllers\DonasiBencanaController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KejadianBencanaController;
+use App\Http\Controllers\LogistikBencanaController;
+use App\Http\Controllers\DistribusiLogistikController;
 
 // ==================== PUBLIC ROUTES ====================
 
 // Redirect root ke login
 Route::get('/', function () {
-    return redirect()->route('login'); // GANTI 'auth.login' -> 'login'
+    return redirect()->route('login');
 });
 
 // Auth Routes (bisa diakses tanpa login)
 Route::controller(AuthController::class)->group(function () {
-
-    Route::get('/login', 'index')->name('login'); // HAPUS 'auth.login'
-
-
+    Route::get('/login', 'index')->name('login');
     Route::post('/login', 'login')->name('login.submit');
     Route::get('/register', 'showRegisterForm')->name('register');
     Route::post('/register', 'register')->name('register.submit');
@@ -35,26 +35,35 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Profile Routes - DAPAT DIAKSES SEMUA USER
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-        Route::put('/update', [ProfileController::class, 'update'])->name('update');
-        Route::get('/photo/edit', [ProfileController::class, 'editPhoto'])->name('photo.edit');
-        Route::put('/photo/update', [ProfileController::class, 'updatePhoto'])->name('photo.update');
-        Route::delete('/photo/delete', [ProfileController::class, 'deletePhoto'])->name('photo.delete');
-    });
+    // PROFIL PENGEMBANG - SEMUA USER BISA LIHAT (HANYA INDEX)
+    Route::get('/pengembang', [PengembangController::class, 'index'])->name('pengembang.index');
 
-    // Data Management
+    // Data Management (untuk semua user)
     Route::resource('warga', WargaController::class);
     Route::resource('kejadian-bencana', KejadianBencanaController::class);
     Route::resource('donasi-bencana', DonasiBencanaController::class);
     Route::resource('posko-bencana', PoskoBencanaController::class);
+    Route::resource('logistik-bencana', LogistikBencanaController::class);
+    Route::resource('distribusi-logistik', DistribusiLogistikController::class);
+
+    Route::get('logistik-bencana/{id}/stok-tersedia', [LogistikBencanaController::class, 'getStokTersedia'])
+        ->name('logistik-bencana.stok-tersedia');
 
     // ========== SUPER ADMIN ONLY ROUTES ==========
     Route::middleware(['checkrole:super_admin'])->group(function () {
 
-        // User Management
+        // User Management (HANYA SUPER ADMIN)
         Route::resource('user', UserController::class);
+Route::get('user/{id}', [UserController::class, 'show'])->name('user.show');
 
+
+        // Pengembang CRUD (HANYA SUPER ADMIN)
+        Route::prefix('pengembang')->name('pengembang.')->group(function () {
+            Route::get('/create', [PengembangController::class, 'create'])->name('create');
+            Route::post('/', [PengembangController::class, 'store'])->name('store');
+            Route::get('/{pengembang}/edit', [PengembangController::class, 'edit'])->name('edit');
+            Route::put('/{pengembang}', [PengembangController::class, 'update'])->name('update');
+            Route::delete('/{pengembang}', [PengembangController::class, 'destroy'])->name('destroy');
+        });
     });
 });

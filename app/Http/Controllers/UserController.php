@@ -6,48 +6,56 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        // **CEK APAKAH USER ADALAH SUPER ADMIN**
-        if (Auth::user()->role !== 'super_admin') {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }
-
-        $searchableColumns = ['name', 'email', 'role'];
-
-        $query = User::query();
-
-        // Handle search
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request, $searchableColumns) {
-                foreach ($searchableColumns as $column) {
-                    $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
-                }
-            });
-        }
-
-        // Handle filter verification status
-        if ($request->filled('email_verified_at')) {
-            if ($request->email_verified_at === 'verified') {
-                $query->whereNotNull('email_verified_at');
-            } elseif ($request->email_verified_at === 'not_verified') {
-                $query->whereNull('email_verified_at');
-            }
-        }
-
-        $dataUser = $query->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('pages.user.index', compact('dataUser'));
+   public function index(Request $request)
+{
+    // **CEK APAKAH USER ADALAH SUPER ADMIN**
+    if (Auth::user()->role !== 'super_admin') {
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    $searchableColumns = ['name', 'email'];
+    $filterableColumns = ['role', 'email_verified_at']; // Tambahkan 'role' di sini
+
+    $query = User::query();
+
+    // Handle search
+    if ($request->filled('search')) {
+        $query->where(function($q) use ($request, $searchableColumns) {
+            foreach ($searchableColumns as $column) {
+                $q->orWhere($column, 'LIKE', '%' . $request->search . '%');
+            }
+        });
+    }
+
+    // Handle filter role - TAMBAHKAN INI
+    if ($request->filled('role')) {
+        $query->where('role', $request->role);
+    }
+
+    // Handle filter verification status
+    if ($request->filled('email_verified_at')) {
+        if ($request->email_verified_at === 'verified') {
+            $query->whereNotNull('email_verified_at');
+        } elseif ($request->email_verified_at === 'not_verified') {
+            $query->whereNull('email_verified_at');
+        }
+    }
+
+
+
+    $dataUser = $query->orderBy('created_at', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('pages.user.index', compact('dataUser'));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -123,9 +131,18 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
+   {
+    // **CEK APAKAH USER ADALAH SUPER ADMIN ATAU SEDANG MELIHAT DATA SENDIRI**
+    $authUser = Auth::user();
+    $user = User::findOrFail($id);
+
+    // Cek apakah user memiliki akses
+    if ($authUser->role !== 'super_admin' && $authUser->id != $id) {
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
+
+    return view('pages.user.show', compact('user'));
+}
 
     /**
      * Show the form for editing the specified resource.

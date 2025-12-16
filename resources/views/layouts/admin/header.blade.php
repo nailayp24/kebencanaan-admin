@@ -9,7 +9,7 @@
     <div class="search-container d-none d-lg-block">
         <div class="search-box">
             <i class="mdi mdi-magnify"></i>
-            <input type="text" placeholder="Cari di BINA DESA...">
+            <input type="text" placeholder="Cari bencana...">
         </div>
     </div>
 
@@ -49,61 +49,52 @@
                 <i class="mdi mdi-chevron-down dropdown-arrow"></i>
             </div>
 
-            <!-- Dropdown Menu - VERSION SUPER KECIL -->
+            <!-- Dropdown Menu - SEJAJAR DENGAN ICON -->
             <div class="dropdown-menu" id="dropdownMenu">
-                <!-- Header Minimal -->
-                <div class="dropdown-minimal-header">
-                    <div class="minimal-profile">
-                        <div class="minimal-avatar">
+                <!-- Header -->
+                <div class="dropdown-header">
+                    <div class="dropdown-profile">
+                        <div class="dropdown-avatar">
                             @if(Auth::check() && Auth::user()->profile_picture)
                                 <img src="{{ Storage::url(Auth::user()->profile_picture) }}"
                                      alt="{{ Auth::user()->name }}">
                             @else
-                                <div class="minimal-avatar-placeholder">
+                                <div class="dropdown-avatar-placeholder">
                                     <span>
                                         {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                                     </span>
                                 </div>
                             @endif
                         </div>
-                        <div class="minimal-info">
-                            <div class="minimal-name">{{ Auth::user()->name ?? 'Super Admin' }}</div>
-                            <div class="minimal-role">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</div>
+                        <div class="dropdown-info">
+                            <div class="dropdown-name">{{ Auth::user()->name ?? 'Super Admin' }}</div>
+                            <div class="dropdown-role">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</div>
+                            <div class="dropdown-email">{{ Auth::user()->email ?? 'supAdmin@gmail.com' }}</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Menu Items Minimal -->
-                <div class="dropdown-minimal-body">
-                    <a href="{{ route('dashboard') }}" class="dropdown-minimal-item">
+                <!-- Menu Items -->
+                <div class="dropdown-body">
+                    <a href="{{ route('dashboard') }}" class="dropdown-item">
                         <i class="mdi mdi-view-dashboard"></i>
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="{{ route('profile.edit') }}" class="dropdown-minimal-item">
-                        <i class="mdi mdi-account-edit"></i>
-                        <span>Profile</span>
-                    </a>
-
-                    <a href="{{ route('profile.photo.edit') }}" class="dropdown-minimal-item">
-                        <i class="mdi mdi-camera"></i>
-                        <span>Foto</span>
-                    </a>
-
                     @if(Auth::check() && Auth::user()->role == 'super_admin')
-                    <div class="dropdown-minimal-divider"></div>
-                    <a href="{{ route('user.index') }}" class="dropdown-minimal-item super-minimal">
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ route('user.index') }}" class="dropdown-item super-item">
                         <i class="mdi mdi-account-multiple"></i>
                         <span>Users</span>
-                        <span class="super-minimal-badge">S</span>
+                        <span class="super-badge">S</span>
                     </a>
                     @endif
 
-                    <div class="dropdown-minimal-divider"></div>
+                    <div class="dropdown-divider"></div>
                     <form id="header-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
-                    <a href="{{ route('logout') }}" class="dropdown-minimal-item logout-minimal" onclick="event.preventDefault(); document.getElementById('header-logout-form').submit();">
+                    <a href="{{ route('logout') }}" class="dropdown-item logout-item" onclick="event.preventDefault(); document.getElementById('header-logout-form').submit();">
                         <i class="mdi mdi-logout"></i>
                         <span>Logout</span>
                     </a>
@@ -118,22 +109,55 @@
 .top-navbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 25px;
+    padding: 0 20px;
     background: #1e88e5;
     color: white;
-    height: 70px;
+    height: 60px;
     position: sticky;
     top: 0;
-    z-index: 999;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     width: 100%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-container {
     flex: 1;
-    max-width: 500px;
-    margin: 0 30px;
+    max-width: 400px;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.9);
+    font-size: 14px;
 }
 
 .top-navbar-right {
@@ -152,17 +176,18 @@
     color: white;
     font-size: 18px;
     display: block;
+    padding: 5px;
 }
 
 .notification-btn .badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: 0;
+    right: 0;
     background: #f44336;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    font-size: 8px;
+    font-size: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,29 +197,30 @@
 /* ===== USER DROPDOWN ===== */
 .user-dropdown {
     position: relative;
-    z-index: 1001;
 }
 
 .user-toggle {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 3px 6px;
-    border-radius: 16px;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background 0.3s;
-}
-
-.user-toggle:hover {
+    transition: background 0.2s;
     background: rgba(255,255,255,0.1);
 }
 
+.user-toggle:hover {
+    background: rgba(255,255,255,0.2);
+}
+
 .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1px solid white;
+    border: 2px solid rgba(255,255,255,0.5);
+    flex-shrink: 0;
 }
 
 .user-avatar img {
@@ -215,88 +241,93 @@
 
 .avatar-placeholder span {
     color: white;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: bold;
 }
 
 .user-info {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
 }
 
 .user-name {
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1.2;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
 }
 
 .user-role .badge {
-    font-size: 9px;
-    padding: 1px 3px;
-    border-radius: 2px;
-    line-height: 1;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
 }
 
 .dropdown-arrow {
-    font-size: 14px;
+    font-size: 16px;
     color: white;
+    flex-shrink: 0;
 }
 
-/* ===== DROPDOWN MENU SUPER KECIL ===== */
+/* ===== DROPDOWN MENU - SEJAJAR DENGAN ICON ===== */
 .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     right: 0;
-    width: 220px; /* SANGAT KECIL */
+    width: 280px; /* Dikecilkan */
     background: white;
-    border-radius: 4px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    z-index: 99999;
-    margin-top: 6px;
-    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    z-index: 1001;
     overflow: hidden;
+    border: 1px solid #e0e0e0;
 }
 
 .dropdown-menu.show {
-    display: block !important;
-    animation: fadeIn 0.15s ease;
+    display: block;
+    animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-3px); }
+    from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Dropdown Header Minimal */
-.dropdown-minimal-header {
-    background: #1e88e5;
-    padding: 12px;
+/* Dropdown Header */
+.dropdown-header {
+    background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+    padding: 16px; /* Dikecilkan */
     color: white;
 }
 
-.minimal-profile {
+.dropdown-profile {
     display: flex;
     align-items: center;
 }
 
-.minimal-avatar {
-    width: 36px;
-    height: 36px;
+.dropdown-avatar {
+    width: 50px; /* Dikecilkan */
+    height: 50px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid rgba(255,255,255,0.4);
-    margin-right: 10px;
+    border: 3px solid rgba(255,255,255,0.4);
+    margin-right: 12px;
     flex-shrink: 0;
 }
 
-.minimal-avatar img {
+.dropdown-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.minimal-avatar-placeholder {
+.dropdown-avatar-placeholder {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -305,251 +336,223 @@
     justify-content: center;
 }
 
-.minimal-avatar-placeholder span {
+.dropdown-avatar-placeholder span {
     color: white;
-    font-size: 14px;
+    font-size: 18px; /* Dikecilkan */
     font-weight: bold;
 }
 
-.minimal-info {
+.dropdown-info {
     flex: 1;
     min-width: 0;
 }
 
-.minimal-name {
-    font-weight: 600;
-    font-size: 12px;
-    margin-bottom: 2px;
+.dropdown-name {
+    font-weight: 700;
+    font-size: 14px; /* Dikecilkan */
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 180px;
 }
 
-.minimal-role {
-    color: rgba(255,255,255,0.9);
-    font-size: 10px;
-    background: rgba(255,255,255,0.15);
-    padding: 2px 6px;
-    border-radius: 3px;
+.dropdown-role {
+    color: rgba(255,255,255,0.95);
+    font-size: 11px; /* Dikecilkan */
+    background: rgba(255,255,255,0.25);
+    padding: 2px 8px; /* Dikecilkan */
+    border-radius: 10px;
     display: inline-block;
+    margin-bottom: 4px;
+    font-weight: 500;
 }
 
-/* Dropdown Body Minimal */
-.dropdown-minimal-body {
-    padding: 6px 0;
+.dropdown-email {
+    font-size: 11px; /* Dikecilkan */
+    color: rgba(255,255,255,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
 }
 
-.dropdown-minimal-item {
+/* Dropdown Body */
+.dropdown-body {
+    padding: 8px 0; /* Dikecilkan */
+}
+
+.dropdown-item {
     display: flex;
     align-items: center;
-    padding: 6px 12px;
+    padding: 10px 16px; /* Dikecilkan */
     color: #333;
     text-decoration: none;
-    font-size: 12px;
-    border-left: 2px solid transparent;
-    transition: all 0.15s;
-    min-height: 30px;
+    font-size: 13px; /* Dikecilkan */
+    font-weight: 500;
+    transition: all 0.2s;
+    border-left: 3px solid transparent; /* Dikecilkan */
 }
 
-.dropdown-minimal-item:hover {
+.dropdown-item:hover {
     background: #f0f7ff;
     border-left-color: #1e88e5;
-    padding-left: 14px;
+    padding-left: 20px; /* Dikecilkan */
 }
 
-.dropdown-minimal-item i {
-    margin-right: 8px;
-    font-size: 16px;
-    width: 18px;
+.dropdown-item i {
+    margin-right: 10px; /* Dikecilkan */
+    font-size: 18px; /* Dikecilkan */
+    width: 20px;
     text-align: center;
     flex-shrink: 0;
 }
 
-/* Icons Colors Minimal */
-.dropdown-minimal-item .mdi-view-dashboard {
+/* Icons Colors */
+.dropdown-item .mdi-view-dashboard {
     color: #1e88e5;
 }
 
-.dropdown-minimal-item .mdi-account-edit {
-    color: #4B49AC;
-}
-
-.dropdown-minimal-item .mdi-camera {
-    color: #2196f3;
-}
-
-.dropdown-minimal-item .mdi-account-multiple {
+.dropdown-item .mdi-account-multiple {
     color: #ff9800;
 }
 
-.dropdown-minimal-item .mdi-logout {
+.dropdown-item .mdi-logout {
     color: #d32f2f;
 }
 
-/* Special Items Minimal */
-.dropdown-minimal-divider {
+/* Special Items */
+.dropdown-divider {
     height: 1px;
     background: #eee;
-    margin: 5px 0;
+    margin: 6px 0; /* Dikecilkan */
 }
 
-.super-minimal {
+.super-item {
     background: #fff8e1 !important;
-    font-size: 11px !important;
+    position: relative;
 }
 
-.super-minimal-badge {
+.super-badge {
     background: #d32f2f;
     color: white;
-    font-size: 7px;
-    padding: 1px 3px;
-    border-radius: 2px;
+    font-size: 9px; /* Dikecilkan */
+    padding: 1px 5px; /* Dikecilkan */
+    border-radius: 3px;
     margin-left: auto;
     font-weight: bold;
-    line-height: 1;
 }
 
-.logout-minimal {
+.logout-item {
     color: #d32f2f !important;
     font-weight: 600;
-    font-size: 11px !important;
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 767px) {
-    .user-info {
-        display: none;
+@media (max-width: 768px) {
+    .top-navbar {
+        padding: 0 15px;
+        height: 56px;
     }
 
-    .search-container {
-        display: none;
-    }
-
-    .dropdown-menu {
-        position: fixed;
-        top: 60px !important;
-        right: 8px !important;
-        left: 8px !important;
-        width: auto !important;
-        max-width: calc(100vw - 16px) !important;
-    }
-
-    .user-toggle {
-        padding: 2px 4px;
+    .hamburger-btn {
+        margin-right: 10px;
+        font-size: 18px;
+        padding: 6px;
     }
 
     .user-avatar {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
     }
 
-    .avatar-placeholder span {
-        font-size: 10px;
+    .user-name {
+        font-size: 12px;
+        max-width: 100px;
+    }
+
+    .user-info {
+        display: none;
     }
 
     .notification-btn {
         font-size: 16px;
     }
 
+    .dropdown-menu {
+        position: fixed;
+        top: 56px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: 260px !important; /* Lebih kecil di mobile */
+    }
+
+    .dropdown-avatar {
+        width: 42px;
+        height: 42px;
+        margin-right: 10px;
+    }
+
+    .dropdown-avatar-placeholder span {
+        font-size: 16px;
+    }
+
+    .dropdown-name {
+        font-size: 13px;
+    }
+
+    .dropdown-email {
+        font-size: 10px;
+    }
+
+    .dropdown-item {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-container {
+        display: none !important;
+    }
+
     .notification-btn .badge {
-        width: 12px;
-        height: 12px;
-        font-size: 7px;
-    }
-}
-
-/* Untuk layar sangat kecil */
-@media (max-width: 480px) {
-    .dropdown-menu {
-        width: 200px !important;
-    }
-
-    .minimal-avatar {
-        width: 32px;
-        height: 32px;
-        margin-right: 8px;
-    }
-
-    .minimal-name {
-        font-size: 11px;
-    }
-
-    .minimal-role {
-        font-size: 9px;
-    }
-
-    .dropdown-minimal-item {
-        padding: 5px 10px;
-        font-size: 11px;
-    }
-
-    .dropdown-minimal-item i {
-        font-size: 14px;
-        margin-right: 6px;
-    }
-}
-
-/* Untuk layar extra kecil (phone portrait) */
-@media (max-width: 360px) {
-    .top-navbar {
-        padding: 0 15px;
+        width: 14px;
+        height: 14px;
+        font-size: 8px;
     }
 
     .dropdown-menu {
-        width: 180px !important;
-    }
-
-    .minimal-avatar {
-        width: 30px;
-        height: 30px;
-    }
-
-    .minimal-name {
-        font-size: 10px;
-    }
-
-    .dropdown-minimal-item {
-        padding: 4px 8px;
-        font-size: 10px;
+        width: 240px !important;
+        right: 5px !important;
     }
 }
 </style>
 
 <script>
-// SIMPLE DROPDOWN SCRIPT
 document.addEventListener('DOMContentLoaded', function() {
     const userDropdown = document.getElementById('userDropdown');
     const dropdownMenu = document.getElementById('dropdownMenu');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
 
-    if (!userDropdown || !dropdownMenu) {
-        console.error('Dropdown elements not found!');
-        return;
+    if (userDropdown && dropdownMenu) {
+        userDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!userDropdown.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
     }
 
-    // Toggle dropdown saat klik avatar
-    userDropdown.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        dropdownMenu.classList.toggle('show');
-
-        // Positioning untuk desktop
-        const rect = userDropdown.getBoundingClientRect();
-        if (window.innerWidth > 767) {
-            dropdownMenu.style.top = (rect.bottom + window.scrollY) + 'px';
-            dropdownMenu.style.right = (window.innerWidth - rect.right) + 'px';
-        }
-    });
-
-    // Close dropdown saat klik di luar
-    document.addEventListener('click', function(e) {
-        if (!userDropdown.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('show');
-        }
-    });
-
-    // Prevent dropdown close saat klik di dalam dropdown
-    dropdownMenu.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', function() {
+            // Toggle sidebar logic here
+            document.body.classList.toggle('sidebar-collapsed');
+        });
+    }
 });
 </script>

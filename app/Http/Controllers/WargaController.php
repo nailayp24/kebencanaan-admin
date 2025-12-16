@@ -66,6 +66,12 @@ class WargaController extends Controller
         return view('pages.warga.edit', compact('warga'));
     }
 
+    public function show($id)
+{
+    $warga = Warga::findOrFail($id);
+    return view('pages.warga.show', compact('warga'));
+}
+
     public function update(Request $request, $id)
     {
         $warga = Warga::findOrFail($id);

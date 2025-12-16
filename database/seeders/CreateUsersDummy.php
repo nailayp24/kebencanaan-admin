@@ -16,35 +16,14 @@ class CreateUsersDummy extends Seeder
 
         // Hapus data lama jika ada
         User::truncate();
-
-        // 1. Buat user utama
-        User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@bina-desa.id',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
-
-        User::create([
-            'name' => 'Naila Y',
-            'email' => 'nailay@pcr.ac.id',
-            'password' => Hash::make('naila'),
-            'email_verified_at' => now(),
-        ]);
-
-        User::create([
-            'name' => 'Admin Bencana',
-            'email' => 'admin@bina-desa.id',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+    
 
         // 2. Buat 197 user dummy (total jadi 200)
         for ($i = 1; $i <= 197; $i++) {
             $firstName = $faker->firstName();
             $lastName = $faker->lastName();
             $name = $firstName . ' ' . $lastName;
-            $email = strtolower($firstName . '.' . $lastName . '@bina-desa.id');
+            $email = strtolower($firstName . '.' . $lastName . '@sitaga.id');
 
             // Pastikan email unique
             $email = $this->makeUniqueEmail($email, $i);

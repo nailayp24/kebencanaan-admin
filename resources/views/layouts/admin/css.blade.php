@@ -46,16 +46,18 @@ html, body {
 
 /* ===== SIDEBAR ===== */
 .sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     width: 260px;
     background: white;
     box-shadow: 2px 0 15px rgba(0, 0, 0, 0.05);
     position: fixed;
     left: 0;
     top: 0;
-    bottom: 0;
     z-index: 1000;
     transition: all 0.3s ease;
-    overflow-y: auto;
+    overflow: hidden; /* Ubah dari auto ke hidden */
 }
 
 /* Logo di Sidebar - SAMAKAN TINGGI DENGAN HEADER */
@@ -64,18 +66,36 @@ html, body {
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     background: #1e88e5;
-    height: 70px !important;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 70px;
-    max-height: 70px;
+    flex-shrink: 0;
 }
 
+
 .sidebar-brand img {
-    max-height: 35px;
+    max-height: 150px;
     width: auto;
-    filter: brightness(0) invert(1);
+
+}
+
+/* Style untuk scrollbar sidebar */
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 /* User Profile di Sidebar */
@@ -729,4 +749,6 @@ html, body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
+
+
 </style>

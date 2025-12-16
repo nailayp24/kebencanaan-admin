@@ -78,7 +78,7 @@
 
     .feature-list i {
       margin-right: 10px;
-      font-size: 1.1rem;
+      font-size: 1.1rem; /* Ukuran ikon sedikit diperbesar */
     }
 
     .form-label {
@@ -106,6 +106,10 @@
       border: none;
       color: white;
       border-radius: 8px 0 0 8px;
+    }
+
+    .input-group-text i {
+      font-size: 1.2rem; /* Ukuran ikon input group */
     }
 
     .btn-primary {
@@ -158,10 +162,10 @@
         {{-- Left Side: Description --}}
         <div class="col-md-6 auth-left">
           <div class="text-center mb-4">
-            <img src="{{ asset('assets-admin/images/logo-bina-desa.png') }}"
-                 alt="Logo Bina Desa"
-                 width="80"
-                 class="rounded-circle shadow">
+            <img src="{{ asset('assets-admin/images/logo/logo-bencana.png') }}"
+                 alt="Logo SIGANA"
+                 width="150">
+
           </div>
 
           <div class="text-center mb-3">

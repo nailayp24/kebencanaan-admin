@@ -13,12 +13,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            
+            CreateDefaultUsers::class,
             CreateUsersDummy::class,
             CreateKejadianBencanaDummy::class,
             CreateWargaDummy::class,
             CreatePoskoBencanaDummy::class,
             CreateDonasiBencanaDummy::class,
+            CreateLogistikBencanaDummy::class,
+            CreateDistribusiLogistikDummy::class,
         ]);
     }
 }

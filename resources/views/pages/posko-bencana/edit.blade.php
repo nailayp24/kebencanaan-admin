@@ -4,172 +4,162 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">
-                    <i class="mdi mdi-home-edit me-2"></i>Edit Data Posko Bencana
-                </h4>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-primary">
+                        <i class="mdi mdi-home-edit me-1"></i> Edit Data Posko Bencana
+                    </h6>
+                    <a href="{{ route('posko-bencana.index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="mdi mdi-arrow-left me-1"></i> Kembali
+                    </a>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-3">
+
                 <form action="{{ route('posko-bencana.update', $posko->posko_id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <i class="mdi mdi-alert-circle-outline me-2"></i>
-                            <strong>Terjadi kesalahan:</strong>
-                            <ul class="mb-0 mt-2">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show p-2 mb-3" role="alert">
+                            <div class="d-flex align-items-start">
+                                <i class="mdi mdi-alert-circle-outline fs-5 me-2 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <strong>Terjadi kesalahan:</strong>
+                                    <ul class="mb-0 mt-1" style="font-size: 0.85rem;">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn-close p-1" data-bs-dismiss="alert"></button>
+                            </div>
                         </div>
                     @endif
 
-                    <div class="mb-3">
-                        <label class="form-label">Kejadian Bencana <span class="text-danger">*</span></label>
-
-                        @if($kejadian->count() > 0)
-                            <div class="border p-3 rounded bg-light">
-                                @foreach($kejadian as $item)
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="radio"
-                                               name="kejadian_id" id="kejadian_{{ $item->kejadian_id }}"
-                                               value="{{ $item->kejadian_id }}"
-                                               {{ old('kejadian_id', $posko->kejadian_id) == $item->kejadian_id ? 'checked' : '' }} required>
-                                        <label class="form-check-label" for="kejadian_{{ $item->kejadian_id }}">
-                                            <strong>{{ $item->jenis_bencana }}</strong> -
-                                            {{ $item->lokasi_text }}
-                                            ({{ $item->tanggal->format('d/m/Y') }})
-                                        </label>
-                                    </div>
+                    {{-- Kejadian Bencana --}}
+                    <div class="mb-2">
+                        <label class="form-label fw-medium small mb-1">Kejadian Bencana <span class="text-danger">*</span></label>
+                        @if ($kejadian->count() > 0)
+                            <select name="kejadian_id" class="form-select form-select-sm select2 @error('kejadian_id') is-invalid @enderror" required>
+                                <option value="">-- Pilih --</option>
+                                @foreach ($kejadian as $item)
+                                    <option value="{{ $item->kejadian_id }}"
+                                        {{ old('kejadian_id', $posko->kejadian_id) == $item->kejadian_id ? 'selected' : '' }}>
+                                        {{ $item->jenis_bencana }} – {{ $item->lokasi_text }} ({{ $item->tanggal->format('d/m/Y') }})
+                                    </option>
                                 @endforeach
-                            </div>
-                            <div class="form-text text-muted">
-                                <i class="mdi mdi-information-outline me-1"></i>
-                                Pilih kejadian bencana yang terkait dengan posko ini
-                            </div>
+                            </select>
+                            <div class="form-text small">{{ $kejadian->count() }} kejadian tersedia</div>
                         @else
-                            <div class="alert alert-warning">
-                                <i class="mdi mdi-alert me-2"></i>
-                                Tidak ada data kejadian bencana.
-                                <a href="{{ route('kejadian-bencana.create') }}" class="alert-link">
-                                    Tambah kejadian bencana terlebih dahulu
-                                </a>
+                            <div class="alert alert-warning p-2 mb-2">
+                                <i class="mdi mdi-alert me-1"></i> Tidak ada data kejadian bencana.
+                                <a href="{{ route('kejadian-bencana.create') }}" class="text-decoration-underline">Tambah kejadian</a>
                             </div>
                             <input type="hidden" name="kejadian_id" value="{{ $posko->kejadian_id }}">
                         @endif
-
                         @error('kejadian_id')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="row">
+                    <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Posko <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama') is-invalid @enderror"
-                                       id="nama" name="nama" value="{{ old('nama', $posko->nama) }}"
-                                       placeholder="Contoh: Posko Utama Gunung Semeru" required>
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <label class="form-label fw-medium small mb-1">Nama Posko <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm @error('nama') is-invalid @enderror"
+                                   name="nama" value="{{ old('nama', $posko->nama) }}" required>
+                            @error('nama')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="penanggung_jawab" class="form-label">Penanggung Jawab <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('penanggung_jawab') is-invalid @enderror"
-                                       id="penanggung_jawab" name="penanggung_jawab" value="{{ old('penanggung_jawab', $posko->penanggung_jawab) }}"
-                                       placeholder="Masukkan nama penanggung jawab" required>
-                                @error('penanggung_jawab')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <label class="form-label fw-medium small mb-1">Penanggung Jawab <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm @error('penanggung_jawab') is-invalid @enderror"
+                                   name="penanggung_jawab" value="{{ old('penanggung_jawab', $posko->penanggung_jawab) }}" required>
+                            @error('penanggung_jawab')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="alamat" class="form-label">Alamat Posko <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('alamat') is-invalid @enderror"
-                                  id="alamat" name="alamat" rows="3"
-                                  placeholder="Masukkan alamat lengkap posko" required>{{ old('alamat', $posko->alamat) }}</textarea>
+                    <div class="mb-2">
+                        <label class="form-label fw-medium small mb-1">Alamat Posko <span class="text-danger">*</span></label>
+                        <textarea class="form-control form-control-sm @error('alamat') is-invalid @enderror"
+                                  name="alamat" rows="2" required>{{ old('alamat', $posko->alamat) }}</textarea>
                         @error('alamat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="kontak" class="form-label">Kontak <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('kontak') is-invalid @enderror"
-                               id="kontak" name="kontak" value="{{ old('kontak', $posko->kontak) }}"
-                               placeholder="Contoh: 081234567890" required>
-                        @error('kontak')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium small mb-1">Kontak <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm @error('kontak') is-invalid @enderror"
+                                   name="kontak" value="{{ old('kontak', $posko->kontak) }}" required>
+                            @error('kontak')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
-                      {{-- ===== TAMPILKAN FILE YANG SUDAH DIUPLOAD ===== --}}
-                    <div class="mb-4">
-                        <label class="form-label">Foto Posko Terupload</label>
+                    {{-- Foto Posko --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-medium small mb-1">
+                            <i class="mdi mdi-image-multiple me-1"></i> Foto Posko
+                            <span class="badge bg-primary ms-2">{{ $mediaFiles->count() }} file</span>
+                        </label>
 
-                        @if($mediaFiles->count() > 0)
-                            <div class="row">
-                                @foreach($mediaFiles as $file)
-                                    <div class="col-md-3 mb-3">
-                                        <div class="card border">
-                                            <div class="card-body p-2 text-center">
-                                                @if(str_contains($file->mime_type, 'image'))
-                                                    <img src="{{ asset('storage/uploads/posko_bencana/' . $file->file_name) }}"
-                                                         class="img-thumbnail mb-2" style="height: 100px; object-fit: cover;">
-                                                @else
-                                                    <i class="mdi mdi-file-pdf-box" style="font-size: 48px; color: #e74c3c;"></i>
-                                                    <p class="small mt-2 text-truncate">{{ $file->file_name }}</p>
-                                                @endif
-
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           name="delete_media[]" value="{{ $file->media_id }}" id="delete_{{ $file->media_id }}">
-                                                    <label class="form-check-label small" for="delete_{{ $file->media_id }}">
-                                                        Hapus file ini
-                                                    </label>
-                                                </div>
+                        @if ($mediaFiles->count() > 0)
+                            <div class="row g-1">
+                                @foreach ($mediaFiles as $file)
+                                    <div class="col-6 col-md-3">
+                                        <div class="border rounded p-1 text-center small">
+                                            @if (str_contains($file->mime_type, 'image'))
+                                                <img src="{{ asset('storage/uploads/posko_bencana/' . $file->file_name) }}"
+                                                     class="img-fluid mb-1" style="height: 60px; object-fit: cover;">
+                                            @else
+                                                <i class="mdi mdi-file-pdf-box text-danger fs-5 mb-1"></i>
+                                            @endif
+                                            <div class="form-check small mt-1 mb-0">
+                                                <input class="form-check-input" type="checkbox" name="delete_media[]"
+                                                       value="{{ $file->media_id }}" id="del_{{ $file->media_id }}">
+                                                <label class="form-check-label" for="del_{{ $file->media_id }}">Hapus</label>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         @else
-                            <div class="alert alert-info">
-                                <i class="mdi mdi-information-outline me-2"></i>
-                                Belum ada foto posko yang diupload
+                            <div class="text-muted small">
+                                <i class="mdi mdi-information-outline me-1"></i> Belum ada foto
                             </div>
                         @endif
                     </div>
 
-                    {{-- ===== INPUT UNTUK UPLOAD FILE BARU ===== --}}
-                    <div class="mb-4">
-                        <label for="foto_posko" class="form-label">Upload Foto Posko Baru</label>
-                        <input type="file" class="form-control @error('foto_posko.*') is-invalid @enderror"
-                               id="foto_posko" name="foto_posko[]" multiple
-                               accept=".jpg,.jpeg,.png,.pdf">
-                        <div class="form-text">
-                            <i class="mdi mdi-information-outline me-1"></i>
-                            Pilih file baru untuk ditambahkan. Bisa upload beberapa file sekaligus.
-                        </div>
+                    {{-- Upload Baru + Preview --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-medium small mb-1">
+                            <i class="mdi mdi-file-plus me-1"></i> Upload Foto Baru
+                        </label>
+                        <input type="file" class="form-control form-control-sm @error('foto_posko.*') is-invalid @enderror"
+                               name="foto_posko[]" multiple accept=".jpg,.jpeg,.png" id="foto_posko">
+
                         @error('foto_posko.*')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
+
+                        {{-- Preview Area --}}
+                        <div id="preview-container" class="mt-2 d-none">
+                            <label class="form-label fw-medium small mb-1">Preview:</label>
+                            <div class="row g-1" id="imagePreview"></div>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a href="{{ route('posko-bencana.index') }}" class="btn btn-secondary">
-                            <i class="mdi mdi-arrow-left me-1"></i> Kembali
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="mdi mdi-content-save me-1"></i> Update Data
+                    <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                        <a href="{{ route('posko-bencana.index') }}" class="btn btn-sm btn-outline-secondary">Batal</a>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="mdi mdi-content-save me-1"></i> Simpan
                         </button>
                     </div>
                 </form>
@@ -178,3 +168,78 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(1.5em + 0.5rem + 2px) !important;
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.875rem !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 1.5 !important;
+    }
+    .select2-container--default .select2-results__option {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "-- Pilih --",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Preview gambar saat upload
+        $('#foto_posko').on('change', function(e) {
+            const previewContainer = $('#preview-container');
+            const imagePreview = $('#imagePreview');
+            imagePreview.empty();
+
+            const files = e.target.files;
+            if (!files.length) {
+                previewContainer.addClass('d-none');
+                return;
+            }
+
+            previewContainer.removeClass('d-none');
+
+            for (let i = 0; i < Math.min(files.length, 5); i++) {
+                if (!files[i].type.startsWith('image/')) continue;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-3';
+
+                    const card = document.createElement('div');
+                    card.className = 'border rounded p-1 text-center small';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'img-fluid mb-1';
+                    img.style = 'height: 60px; object-fit: cover;';
+
+                    const fileName = document.createElement('div');
+                    fileName.className = 'text-truncate';
+                    fileName.textContent = files[i].name.length > 15 ? files[i].name.substring(0, 15) + '...' : files[i].name;
+
+                    card.appendChild(img);
+                    card.appendChild(fileName);
+                    col.appendChild(card);
+                    imagePreview[0].appendChild(col);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        });
+    });
+</script>
+@endpush
