@@ -17,7 +17,7 @@ class CreateDefaultUsers extends Seeder
         $users = [
             [
                 'name' => 'Super Admin',
-                'email' => 'superadmin@sitaga.id',
+                'email' => 'database/seeders/CreateDefaultUsers.php',
                 'password' => 'Super123',
                 'role' => 'super_admin',
             ],

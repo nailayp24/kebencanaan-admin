@@ -48,7 +48,7 @@
                 <i class="mdi mdi-email-outline" style="font-size: 1.2rem;"></i>
             </span>
             <input type="email" class="form-control rounded-end-lg @error('email') is-invalid @enderror"
-                   name="email" placeholder="email@desa.example" value="{{ old('email') }}" required autofocus
+                   name="email" placeholder="email@sitaga.id" value="{{ old('email') }}" required autofocus
                    style="font-size: 1rem; padding: 0.875rem 1rem; height: 48px;">
             @error('email')
                 <div class="invalid-feedback" style="font-size: 0.9rem;">{{ $message }}</div>
