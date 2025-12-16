@@ -118,7 +118,7 @@ public function register(Request $request)
     // Auto login setelah registrasi (opsional)
     // Auth::login($user);
 
-    return redirect()->route('auth.login')
+    return redirect()->route('login')
         ->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
 }
 
